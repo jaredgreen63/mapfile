@@ -1,0 +1,36 @@
+# Server 1: Postgres + scanner (price references, listing scans, deal detection)
+#   cp ../config.example.yaml config.yaml ; cp ../.env.example .env  (edit both)
+#   docker compose -f docker-compose.scanner.yml up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      POSTGRES_DB: arbitrage
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"   # restrict to server 2's IP with a firewall rule
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arb"]
+      interval: 5s
+      retries: 10
+
+  scanner:
+    build:
+      context: ..
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      ROLE: scanner
+      DATABASE_URL: postgresql+psycopg2://arb:${POSTGRES_PASSWORD}@db:5432/arbitrage
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

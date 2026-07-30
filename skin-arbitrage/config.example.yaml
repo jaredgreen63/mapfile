@@ -1,0 +1,50 @@
+# Copy to config.yaml and adjust. Secrets go in .env, never here.
+
+dry_run: true          # KEEP true until you've watched simulated trades for a while
+role: all              # scanner | trader | all  (env ROLE overrides)
+games: [cs2, rust]
+currency: USD
+
+# Optional: only consider these items (empty = consider everything scanned)
+watchlist: []
+# Never trade items whose name contains any of these
+blacklist_substrings: ["Souvenir"]
+
+strategy:
+  min_margin_pct: 8.0            # minimum net margin after fees + safety haircut
+  min_profit_cents: 50           # and at least $0.50 absolute profit
+  min_item_price_cents: 100      # ignore items under $1 (fees eat them)
+  max_item_price_cents: 15000    # ignore items over $150
+  daily_budget_cents: 20000      # max $200/day in buys
+  max_open_positions: 25         # max unsold items held at once
+  reference_safety_pct: 3.0      # haircut on reference price (prices move)
+  min_reference_quantity: 3      # require this many listings at the sell venue (liquidity)
+  max_ref_age_seconds: 900       # ignore reference prices older than 15 min
+  relist_undercut_cents: 1       # undercut lowest ask by this much when listing
+  min_markup_over_cost_pct: 4.0  # never reprice below cost * (1 + this)
+  reprice_interval_seconds: 300
+
+markets:
+  csfloat:                # CS2 only; full auto buy/sell via API key
+    enabled: true
+    buy_enabled: true
+    sell_enabled: true
+    fee_pct: 2.0          # verify your account's actual seller fee
+    poll_seconds: 20
+  skinport:               # CS2 + Rust; price reference + alerts only (no public buy API)
+    enabled: true
+    fee_pct: 12.0
+    poll_seconds: 300     # API is cached 5 min and rate limited — don't lower this
+  dmarket:                # CS2 + Rust; auto-buy works with API keys
+    enabled: true
+    buy_enabled: false    # flip on once DMARKET_* keys are set and tested
+    sell_enabled: false
+    fee_pct: 7.0
+    poll_seconds: 30
+    game_ids:             # override if DMarket changes them
+      cs2: a8db
+      rust: rust
+  steam:                  # reference only; proceeds are wallet-locked
+    enabled: false
+    fee_pct: 15.0
+    poll_seconds: 600

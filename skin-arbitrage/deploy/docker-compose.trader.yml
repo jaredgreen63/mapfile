@@ -1,0 +1,13 @@
+# Server 2: trader (buy executor + relister). Points at server 1's Postgres.
+#   Set DATABASE_URL in .env to postgresql+psycopg2://arb:<pw>@<SERVER1_IP>:5432/arbitrage
+#   docker compose -f docker-compose.trader.yml up -d --build
+services:
+  trader:
+    build:
+      context: ..
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      ROLE: trader
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro

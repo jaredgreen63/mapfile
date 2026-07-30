@@ -1,0 +1,33 @@
+# Single-server / dev: everything in one box (ROLE=all).
+#   docker compose -f docker-compose.single.yml up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      POSTGRES_DB: arbitrage
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arb"]
+      interval: 5s
+      retries: 10
+
+  bot:
+    build:
+      context: ..
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      ROLE: all
+      DATABASE_URL: postgresql+psycopg2://arb:${POSTGRES_PASSWORD}@db:5432/arbitrage
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
