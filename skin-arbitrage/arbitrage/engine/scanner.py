@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import datetime as dt
 import logging
+import random
 
 from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.exc import IntegrityError
@@ -11,7 +12,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from ..config import AppConfig
 from ..db import Deal, PriceRef, utcnow
-from ..markets.base import MarketAdapter
+from ..markets.base import MarketAdapter, RateLimited
 from ..models import MarketListing, PriceReference
 from ..notify import Notifier, fmt_usd
 from .detector import evaluate_listing
@@ -53,16 +54,26 @@ class Scanner:
             session.execute(stmt)
             session.commit()
 
+    @staticmethod
+    async def _respect_cooldown(adapter: MarketAdapter) -> None:
+        remaining = adapter.cooldown_remaining()
+        if remaining > 0:
+            await asyncio.sleep(remaining)
+
     async def reference_loop(self, venue: str) -> None:
         adapter = self.adapters[venue]
+        await asyncio.sleep(random.uniform(0, 5))  # de-sync loops at startup
         while True:
             for game in self.app.games:
+                await self._respect_cooldown(adapter)
                 try:
                     refs = await adapter.fetch_references(game)
                     self._upsert_refs(refs)
+                except RateLimited as e:
+                    adapter.note_rate_limited(e.retry_after)
                 except Exception:
                     log.exception("%s reference refresh failed for %s", venue, game)
-            await asyncio.sleep(adapter.cfg.poll_seconds)
+            await asyncio.sleep(adapter.cfg.poll_seconds * random.uniform(1.0, 1.15))
 
     # ---------- listing scanning + detection ----------
 
@@ -100,10 +111,15 @@ class Scanner:
 
     async def scan_loop(self, venue: str) -> None:
         adapter = self.adapters[venue]
+        await asyncio.sleep(random.uniform(0, 5))
         while True:
             for game in self.app.games:
+                await self._respect_cooldown(adapter)
                 try:
                     listings = await adapter.scan_listings(game)
+                except RateLimited as e:
+                    adapter.note_rate_limited(e.retry_after)
+                    continue
                 except Exception:
                     log.exception("%s listing scan failed for %s", venue, game)
                     continue
@@ -126,7 +142,7 @@ class Scanner:
                                                 f"({cand.margin_pct:.1f}%)"),
                             ],
                         )
-            await asyncio.sleep(adapter.cfg.poll_seconds)
+            await asyncio.sleep(adapter.cfg.poll_seconds * random.uniform(1.0, 1.15))
 
     def tasks(self) -> list:
         coros = []

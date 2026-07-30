@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from abc import ABC
 from typing import Any
 
@@ -17,6 +18,15 @@ log = logging.getLogger("markets")
 
 class MarketError(Exception):
     pass
+
+
+class RateLimited(MarketError):
+    """HTTP 429 — do not retry; back off for retry_after (or the adapter's
+    escalating cooldown) before the next attempt."""
+
+    def __init__(self, venue: str, retry_after: float = 0.0):
+        super().__init__(f"{venue} rate limited (retry_after={retry_after:.0f}s)")
+        self.retry_after = retry_after
 
 
 class MarketAdapter(ABC):
@@ -38,6 +48,21 @@ class MarketAdapter(ABC):
         self.cfg = mcfg
         self.http = http
         self.limiter = RateLimiter(rate_per_second=1.0, burst=2)
+        # 429 cooldown state: doubles on repeated rate limiting, resets on success
+        self._cooldown_until = 0.0
+        self._cooldown = 60.0
+
+    def cooldown_remaining(self) -> float:
+        return max(0.0, self._cooldown_until - time.monotonic())
+
+    def note_rate_limited(self, retry_after: float = 0.0) -> None:
+        wait = max(retry_after, self._cooldown)
+        self._cooldown_until = time.monotonic() + wait
+        self._cooldown = min(self._cooldown * 2, 900.0)
+        log.warning("%s rate limited — cooling down %.0fs", self.name, wait)
+
+    def note_success(self) -> None:
+        self._cooldown = 60.0
 
     # ---- capabilities (override as supported) ----
     async def scan_listings(self, game: str) -> list[MarketListing]:
@@ -68,15 +93,23 @@ class MarketAdapter(ABC):
                     method, url, headers=headers, params=params, json=json_body,
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as resp:
-                    if resp.status == 429 or resp.status >= 500:
+                    if resp.status == 429:
+                        try:
+                            retry_after = float(resp.headers.get("Retry-After", 0))
+                        except ValueError:
+                            retry_after = 0.0
+                        raise RateLimited(self.name, retry_after)
+                    if resp.status >= 500:
                         raise MarketError(f"{self.name} HTTP {resp.status}")
                     if resp.status >= 400:
                         text = await resp.text()
                         raise MarketError(f"{self.name} HTTP {resp.status}: {text[:300]}")
+                    self.note_success()
                     return await resp.json(content_type=None)
+            except RateLimited:
+                raise  # never retried here — callers must honor the cooldown
             except (aiohttp.ClientError, asyncio.TimeoutError, MarketError) as e:
-                retryable = not (isinstance(e, MarketError) and "HTTP 4" in str(e)
-                                 and "HTTP 429" not in str(e))
+                retryable = not (isinstance(e, MarketError) and "HTTP 4" in str(e))
                 if attempt >= retries or not retryable:
                     raise
                 log.warning("%s request failed (%s), retrying in %.0fs", self.name, e, delay)

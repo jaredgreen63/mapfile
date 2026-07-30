@@ -35,7 +35,8 @@ markets:
     buy_enabled: true
     sell_enabled: true
     fee_pct: 2.0          # verify your account's actual seller fee
-    poll_seconds: 20
+    poll_seconds: 60      # unauthenticated polling gets 429'd fast; an API key
+                          # raises your rate limits — add it before lowering this
   skinport:               # CS2 + Rust; price reference + alerts only (no public buy API)
     enabled: true
     fee_pct: 12.0
@@ -45,10 +46,13 @@ markets:
     buy_enabled: false    # flip on once DMARKET_* keys are set and tested
     sell_enabled: false
     fee_pct: 7.0
-    poll_seconds: 30
+    poll_seconds: 60
     game_ids:             # override if DMarket changes them
       cs2: a8db
       rust: rust
+    # Override if DMarket moves endpoints again (they retired exchange/v1 in 2026):
+    # offers_path: /marketplace-api/v2/offers
+    # buy_path: /trading/v1/buy/offers
   steam:                  # reference only; proceeds are wallet-locked
     enabled: false
     fee_pct: 15.0
