@@ -48,9 +48,33 @@ def build_adapters(app: AppConfig, http: aiohttp.ClientSession) -> dict[str, Mar
     return adapters
 
 
+async def test_notify(app: AppConfig) -> bool:
+    """Send a test message to every configured channel and report the result."""
+    notifier = Notifier(app.discord_webhook_url, app.telegram_bot_token, app.telegram_chat_id)
+    if not notifier.configured:
+        print("NOT CONFIGURED: neither DISCORD_WEBHOOK_URL nor "
+              "TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID is set in the environment.\n"
+              "The bot reads these from .env — after editing it, containers must "
+              "be recreated (docker compose up -d), not just restarted.")
+        return False
+    ok = await notifier.send(
+        "If you can read this, notifications are working. 🎉",
+        kind="summary", title="🔔 Test notification",
+        fields=[("Discord", "configured" if notifier.discord_webhook_url else "—"),
+                ("Telegram", "configured" if notifier.telegram_bot_token else "—")],
+    )
+    print("OK — check your channel" if ok
+          else "FAILED — a channel rejected the message; see the log line above "
+               "(bad webhook URL, deleted webhook, or wrong chat id).")
+    return ok
+
+
 async def run(app: AppConfig) -> None:
     session_factory = make_session_factory(app.database_url)
     notifier = Notifier(app.discord_webhook_url, app.telegram_bot_token, app.telegram_chat_id)
+    if not notifier.configured:
+        log.warning("no notification channels configured — deals will only appear "
+                    "in these logs (set DISCORD_WEBHOOK_URL in .env)")
 
     async with aiohttp.ClientSession() as http:
         adapters = build_adapters(app, http)
@@ -79,6 +103,8 @@ def main() -> None:
     parser.add_argument("--role", choices=["scanner", "trader", "all"])
     parser.add_argument("--live", action="store_true",
                         help="disable dry-run (spends real money)")
+    parser.add_argument("--test-notify", action="store_true",
+                        help="send a test notification to Discord/Telegram and exit")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -90,6 +116,9 @@ def main() -> None:
         app.role = args.role
     if args.live:
         app.dry_run = False
+
+    if args.test_notify:
+        raise SystemExit(0 if asyncio.run(test_notify(app)) else 1)
 
     try:
         asyncio.run(run(app))
