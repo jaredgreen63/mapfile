@@ -19,6 +19,7 @@ from .config import AppConfig, load_config
 from .db import make_session_factory
 from .engine.executor import Executor
 from .engine.relister import Relister
+from .engine.reporter import Reporter
 from .engine.scanner import Scanner
 from .markets.base import MarketAdapter
 from .markets.csfloat import CSFloatAdapter
@@ -66,6 +67,7 @@ async def run(app: AppConfig) -> None:
         if app.role in ("trader", "all"):
             tasks.append(Executor(app, adapters, session_factory, notifier).run())
             tasks.append(Relister(app, adapters, session_factory, notifier).run())
+            tasks.append(Reporter(app, session_factory, notifier).run())
         if not tasks:
             raise SystemExit(f"Role {app.role} produced no tasks")
         await asyncio.gather(*tasks)

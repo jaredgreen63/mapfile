@@ -10,6 +10,11 @@ watchlist: []
 # Never trade items whose name contains any of these
 blacklist_substrings: ["Souvenir"]
 
+notifications:
+  # How often the trader posts a status summary to Discord/Telegram
+  # (deals found, spend vs budget, open positions, sales). Minimum 5.
+  summary_interval_minutes: 60
+
 strategy:
   min_margin_pct: 8.0            # minimum net margin after fees + safety haircut
   min_profit_cents: 50           # and at least $0.50 absolute profit

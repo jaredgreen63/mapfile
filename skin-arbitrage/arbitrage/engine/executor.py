@@ -91,9 +91,13 @@ class Executor:
                 self._record_purchase(session, deal, dry_run=True)
                 session.commit()
                 await self.notifier.send(
-                    f"🧪 [DRY RUN] Would buy {deal.market_hash_name} on {deal.buy_venue} "
-                    f"for {fmt_usd(deal.buy_price_cents)} "
-                    f"(est. profit {fmt_usd(deal.est_profit_cents)}, {deal.margin_pct:.1f}%)"
+                    f"**{deal.market_hash_name}**",
+                    kind="buy", title="🧪 [DRY RUN] Would buy",
+                    fields=[
+                        ("Price", f"{fmt_usd(deal.buy_price_cents)} on {deal.buy_venue}"),
+                        ("Est. profit", f"{fmt_usd(deal.est_profit_cents)} "
+                                        f"({deal.margin_pct:.1f}%)"),
+                    ],
                 )
                 return
 
@@ -119,7 +123,8 @@ class Executor:
                 deal.note = str(e)[:500]
                 session.commit()
             await self.notifier.send(
-                f"❌ Buy failed: {deal.market_hash_name} on {deal.buy_venue} — {e}"
+                f"**{deal.market_hash_name}** on {deal.buy_venue}\n{e}",
+                kind="error", title="❌ Buy failed",
             )
             return
 
@@ -129,9 +134,13 @@ class Executor:
             self._record_purchase(session, deal, dry_run=False)
             session.commit()
         await self.notifier.send(
-            f"✅ BOUGHT {deal.market_hash_name} on {deal.buy_venue} for "
-            f"{fmt_usd(deal.buy_price_cents)} — target sell {fmt_usd(deal.ref_price_cents)} "
-            f"on {deal.ref_venue} (est. profit {fmt_usd(deal.est_profit_cents)})"
+            f"**{deal.market_hash_name}**",
+            kind="buy", title="✅ Bought",
+            fields=[
+                ("Paid", f"{fmt_usd(deal.buy_price_cents)} on {deal.buy_venue}"),
+                ("Target sell", f"{fmt_usd(deal.ref_price_cents)} on {deal.ref_venue}"),
+                ("Est. profit", fmt_usd(deal.est_profit_cents)),
+            ],
         )
 
     async def run(self) -> None:

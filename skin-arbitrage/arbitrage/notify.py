@@ -1,11 +1,31 @@
-"""Deal / trade notifications via Discord webhook and/or Telegram."""
+"""Notifications: rich Discord embeds (webhook) + plain-text Telegram.
+
+Discord setup: server -> channel -> Settings -> Integrations -> Webhooks ->
+New Webhook -> copy URL into DISCORD_WEBHOOK_URL in .env.
+"""
 from __future__ import annotations
 
+import datetime as dt
 import logging
 
 import aiohttp
 
 log = logging.getLogger("notify")
+
+# Embed colors per event kind
+COLORS = {
+    "deal": 0x3498DB,      # blue   — opportunity detected
+    "buy": 0x2ECC71,       # green  — purchase (real or simulated)
+    "sell": 0x9B59B6,      # purple — listed / repriced / sold
+    "error": 0xE74C3C,     # red    — failed buy/listing
+    "warn": 0xE67E22,      # orange
+    "summary": 0x1ABC9C,   # teal   — periodic status report
+    "info": 0x95A5A6,      # grey
+}
+
+
+def fmt_usd(cents: int) -> str:
+    return f"${cents / 100:,.2f}"
 
 
 class Notifier:
@@ -15,20 +35,39 @@ class Notifier:
         self.telegram_bot_token = telegram_bot_token
         self.telegram_chat_id = telegram_chat_id
 
-    async def send(self, message: str) -> None:
-        log.info("NOTIFY: %s", message)
+    async def send(self, message: str, *, kind: str = "info", title: str | None = None,
+                   fields: list[tuple[str, str]] | None = None) -> None:
+        """message: plain-text body (used verbatim for Telegram/logs).
+        title/fields: extra structure for the Discord embed."""
+        log.info("NOTIFY[%s]: %s", kind, message)
         try:
             async with aiohttp.ClientSession() as http:
                 if self.discord_webhook_url:
-                    await http.post(self.discord_webhook_url, json={"content": message[:1900]})
+                    await http.post(self.discord_webhook_url,
+                                    json=self._discord_payload(message, kind, title, fields))
                 if self.telegram_bot_token and self.telegram_chat_id:
+                    text = message
+                    if fields:
+                        text += "\n" + "\n".join(f"{k}: {v}" for k, v in fields)
                     await http.post(
                         f"https://api.telegram.org/bot{self.telegram_bot_token}/sendMessage",
-                        json={"chat_id": self.telegram_chat_id, "text": message[:4000]},
+                        json={"chat_id": self.telegram_chat_id, "text": text[:4000]},
                     )
         except Exception:
             log.exception("notification delivery failed")
 
-
-def fmt_usd(cents: int) -> str:
-    return f"${cents / 100:,.2f}"
+    def _discord_payload(self, message: str, kind: str, title: str | None,
+                         fields: list[tuple[str, str]] | None) -> dict:
+        embed = {
+            "description": message[:4000],
+            "color": COLORS.get(kind, COLORS["info"]),
+            "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+        }
+        if title:
+            embed["title"] = title[:250]
+        if fields:
+            embed["fields"] = [
+                {"name": str(name)[:250], "value": str(value)[:1000], "inline": True}
+                for name, value in fields[:25]
+            ]
+        return {"username": "Skin Arbitrage Bot", "embeds": [embed]}

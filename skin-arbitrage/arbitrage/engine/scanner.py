@@ -117,10 +117,14 @@ class Scanner:
                 for listing, cand in candidates:
                     if self._record_deal(listing, cand):
                         await self.notifier.send(
-                            f"💡 Deal: {listing.market_hash_name} on {listing.venue} at "
-                            f"{fmt_usd(listing.price_cents)} — sells ~{fmt_usd(cand.ref_price_cents)} "
-                            f"on {cand.ref_venue} → est. profit {fmt_usd(cand.est_profit_cents)} "
-                            f"({cand.margin_pct:.1f}%)"
+                            f"**{listing.market_hash_name}**",
+                            kind="deal", title="💡 Deal found",
+                            fields=[
+                                ("Buy", f"{fmt_usd(listing.price_cents)} on {listing.venue}"),
+                                ("Sells for", f"~{fmt_usd(cand.ref_price_cents)} on {cand.ref_venue}"),
+                                ("Est. profit", f"{fmt_usd(cand.est_profit_cents)} "
+                                                f"({cand.margin_pct:.1f}%)"),
+                            ],
                         )
             await asyncio.sleep(adapter.cfg.poll_seconds)
 

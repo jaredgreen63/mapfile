@@ -47,6 +47,7 @@ class AppConfig:
     database_url: str = "sqlite:///arbitrage.db"
     watchlist: list[str] = field(default_factory=list)
     blacklist_substrings: list[str] = field(default_factory=lambda: ["Souvenir"])
+    summary_interval_minutes: int = 60
     strategy: StrategyConfig = field(default_factory=StrategyConfig)
     markets: dict[str, MarketConfig] = field(default_factory=dict)
     # secrets (env only)
@@ -69,6 +70,10 @@ def load_config(path: str = "config.yaml") -> AppConfig:
     for key in ("dry_run", "role", "games", "currency", "watchlist", "blacklist_substrings"):
         if key in raw:
             setattr(cfg, key, raw[key])
+
+    notif = raw.get("notifications", {})
+    if "summary_interval_minutes" in notif:
+        cfg.summary_interval_minutes = int(notif["summary_interval_minutes"])
 
     strat = raw.get("strategy", {})
     for key, value in strat.items():

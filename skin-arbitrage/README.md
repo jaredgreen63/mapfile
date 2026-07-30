@@ -56,6 +56,24 @@ API calls are **never retried** (no double-purchase risk).
 - **DMarket**: account settings → trading API → create ed25519 key pair.
 - Optional: a Discord webhook URL and/or Telegram bot for deal alerts.
 
+### Discord notifications
+Create a webhook in your Discord server (channel → Settings → Integrations →
+Webhooks → New Webhook), copy the URL into `DISCORD_WEBHOOK_URL` in `.env`,
+and you'll get color-coded embeds for everything the bot does:
+
+- 💡 **Deal found** (blue) — item, buy price/venue, sell reference, est. profit
+- ✅ **Bought** / 🧪 **Dry-run buy** (green) — what was (or would be) purchased
+- 📤 **Listed** (purple) — item listed for sale, price vs cost
+- ❌ **Buy failed** (red) — venue error details
+- 📊 **Status summary** (teal) — posted every `summary_interval_minutes`:
+  deals found today, buys and spend vs budget, open positions, items awaiting
+  delivery, listed count, and sales/P&L for the day
+- 🟢 **Bot online** — on startup, with role and DRY RUN/LIVE mode
+
+The summary is posted by the **trader** role, so in the two-server setup you
+get exactly one status stream. Telegram gets the same events as plain text if
+`TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` are set.
+
 ### 2. Configure
 ```bash
 cd skin-arbitrage

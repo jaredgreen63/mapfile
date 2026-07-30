@@ -73,10 +73,11 @@ class Relister:
                 item.list_price_cents = price
                 item.listed_at = utcnow()
                 session.commit()
+                mode = "DRY RUN" if item.dry_run else "MANUAL"
                 await self.notifier.send(
-                    f"🧪 [{'DRY RUN' if item.dry_run else 'MANUAL'}] Would list "
-                    f"{item.market_hash_name} at {fmt_usd(price)} "
-                    f"(cost {fmt_usd(item.cost_cents)})"
+                    f"**{item.market_hash_name}**",
+                    kind="sell", title=f"🧪 [{mode}] Would list",
+                    fields=[("Price", fmt_usd(price)), ("Cost", fmt_usd(item.cost_cents))],
                 )
                 return
 
@@ -95,8 +96,9 @@ class Relister:
             item.listed_at = utcnow()
             session.commit()
             await self.notifier.send(
-                f"📤 Listed {item.market_hash_name} on {adapter.name} at {fmt_usd(price)} "
-                f"(cost {fmt_usd(item.cost_cents)})"
+                f"**{item.market_hash_name}** on {adapter.name}",
+                kind="sell", title="📤 Listed for sale",
+                fields=[("Price", fmt_usd(price)), ("Cost", fmt_usd(item.cost_cents))],
             )
 
     async def _reprice_item(self, item_id: int) -> None:
