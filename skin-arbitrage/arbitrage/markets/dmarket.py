@@ -1,20 +1,22 @@
 """DMarket adapter (CS2 + Rust). https://docs.dmarket.com
 
-Public market browsing needs no auth. Trading (buy) uses ed25519-signed
-requests with the public/secret key pair from DMarket account settings.
+The marketplace-api/v2 endpoints require ed25519-signed requests for
+EVERYTHING, including browsing — so this adapter is unavailable until
+DMARKET_PUBLIC_KEY / DMARKET_SECRET_KEY are set in .env (account settings
+-> trading API -> create key pair; free). The signature covers
+method + path-with-query + body + timestamp.
 
-Endpoints (the old /exchange/v1/market/items returned 410 Gone in 2026):
+Endpoints (the old public /exchange/v1/market/items returned 410 in 2026):
   browse:  GET  /marketplace-api/v2/offers        (configurable: offers_path)
   buy:     POST /trading/v1/buy/offers            (configurable: buy_path)
-Both paths can be overridden in config.yaml under markets.dmarket in case
-DMarket moves them again. Game IDs are also configurable (game_ids);
-defaults: cs2 -> a8db, rust -> rust.
+Game IDs are configurable (game_ids); defaults: cs2 -> a8db, rust -> rust.
 """
 from __future__ import annotations
 
 import json
 import logging
 import time
+from urllib.parse import urlencode
 
 from nacl.signing import SigningKey
 
@@ -35,8 +37,21 @@ class DMarketAdapter(MarketAdapter):
     can_reference = True
 
     @property
-    def can_buy(self) -> bool:  # type: ignore[override]
+    def _has_keys(self) -> bool:
         return bool(self.app.dmarket_public_key and self.app.dmarket_secret_key)
+
+    @property
+    def available(self) -> bool:  # type: ignore[override]
+        return self._has_keys
+
+    unavailable_reason = ("DMARKET_PUBLIC_KEY / DMARKET_SECRET_KEY not set in .env — "
+                          "DMarket's v2 API requires signed requests even for browsing. "
+                          "Create free API keys in DMarket account settings, or set "
+                          "markets.dmarket.enabled: false to silence this.")
+
+    @property
+    def can_buy(self) -> bool:  # type: ignore[override]
+        return self._has_keys
 
     can_sell = False  # selling requires items in DMarket inventory; enable after deposit flow
 
@@ -82,10 +97,12 @@ class DMarketAdapter(MarketAdapter):
         return str(oid) if oid else None
 
     async def _fetch_offers(self, game_id: str, params: dict) -> list[dict]:
-        data = await self._request_json(
-            "GET", f"{BASE}{self._offers_path()}",
-            params={"gameId": game_id, "currency": "USD", **params},
-        )
+        # Signed GET: the query string is part of the signed message, so build
+        # the full path here and don't pass params separately.
+        query = urlencode({"gameId": game_id, "currency": "USD", **params})
+        path_with_query = f"{self._offers_path()}?{query}"
+        headers = self._signed_headers("GET", path_with_query)
+        data = await self._request_json("GET", f"{BASE}{path_with_query}", headers=headers)
         return (data or {}).get("objects", []) or []
 
     async def scan_listings(self, game: str) -> list[MarketListing]:

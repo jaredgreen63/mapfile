@@ -149,6 +149,9 @@ class Scanner:
         for name, adapter in self.adapters.items():
             if not adapter.cfg.enabled:
                 continue
+            if not adapter.available:
+                log.warning("%s skipped: %s", name, adapter.unavailable_reason)
+                continue
             if adapter.can_reference and adapter.fetch_references.__qualname__ != \
                     "MarketAdapter.fetch_references":
                 coros.append(self.reference_loop(name))

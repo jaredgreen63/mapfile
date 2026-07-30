@@ -42,6 +42,10 @@ class MarketAdapter(ABC):
     can_reference = False
     can_buy = False
     can_sell = False
+    # False when the venue can't be used at all right now (e.g. missing
+    # credentials on an auth-only API); unavailable_reason explains why.
+    available: bool = True
+    unavailable_reason: str = ""
 
     def __init__(self, app: AppConfig, mcfg: MarketConfig, http: aiohttp.ClientSession):
         self.app = app
