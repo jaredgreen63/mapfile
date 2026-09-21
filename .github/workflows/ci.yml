@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+    paths: ['bassett-court/**', '.github/workflows/**']
+  pull_request:
+    paths: ['bassett-court/**', '.github/workflows/**']
+
+defaults:
+  run:
+    working-directory: bassett-court
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: bassett-court/package-lock.json
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Chromium for the responsive check
+        run: npx playwright install --with-deps chromium
+
+      - name: Responsive check
+        run: |
+          npx next start --port 3100 &
+          for _ in $(seq 1 30); do
+            curl -sf -o /dev/null http://127.0.0.1:3100/ && break
+            sleep 2
+          done
+          npm run check:responsive

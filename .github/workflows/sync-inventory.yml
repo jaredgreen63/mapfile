@@ -1,0 +1,132 @@
+name: Sync inventory
+
+# This workflow is what makes the catalogue self-maintaining. It re-reads the
+# upstream source on a schedule, rewrites data/inventory.json, and commits the
+# result. Because the snapshot is a full replacement, a vehicle added upstream
+# appears on the next run and a vehicle withdrawn upstream disappears — no
+# manual listing management at either end.
+#
+# Pushing the commit is what triggers a redeploy on Vercel, Netlify, Cloudflare
+# Pages or any host wired to this branch.
+
+on:
+  schedule:
+    # Every three hours. Dealer inventory does not move faster than that, and a
+    # gentler cadence keeps us a good citizen of the upstream site.
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      adapter:
+        description: 'Source adapter to use'
+        required: false
+        default: ''
+        type: choice
+        options: ['', 'sitemap-jsonld', 'feed', 'demo']
+      force:
+        description: 'Bypass the shrink guard (use when a large drop is genuine)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: sync-inventory
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: bassett-court
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: bassett-court/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync inventory
+        env:
+          INVENTORY_SOURCE_URL: ${{ vars.INVENTORY_SOURCE_URL }}
+          INVENTORY_SOURCE_ADAPTER: ${{ vars.INVENTORY_SOURCE_ADAPTER }}
+          INVENTORY_FEED_URL: ${{ secrets.INVENTORY_FEED_URL }}
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.adapter }}" ]; then ARGS="$ARGS --source=${{ inputs.adapter }}"; fi
+          if [ "${{ inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          npm run sync -- $ARGS
+
+      - name: Verify the site still builds with the new data
+        run: npm run build
+
+      - name: Commit the snapshot
+        id: commit
+        run: |
+          if git diff --quiet -- data/; then
+            echo "No inventory change."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          COUNT=$(node -p "require('./data/inventory.json').vehicleCount")
+          git config user.name  "inventory-sync[bot]"
+          git config user.email "inventory-sync@users.noreply.github.com"
+          git add data/
+          git commit -m "chore(inventory): sync — ${COUNT} vehicles"
+
+          # The schedule can collide with a human push; rebase rather than fail.
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            sleep $((attempt * 5))
+          done
+
+          echo "Could not push the snapshot after 3 attempts." >&2
+          exit 1
+
+      - name: Trigger deploy
+        # Only needed when the host does not redeploy on push by itself.
+        if: steps.commit.outputs.changed == 'true' && env.DEPLOY_HOOK_URL != ''
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "$DEPLOY_HOOK_URL"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Inventory sync"
+            echo ''
+            if [ -f data/inventory.json ]; then
+              node -e "
+                const s = require('./data/inventory.json');
+                console.log('- Vehicles published: **' + s.vehicleCount + '**');
+                console.log('- Adapter: \`' + s.adapter + '\`');
+                console.log('- Generated: ' + s.generatedAt);
+              "
+            fi
+            if [ -f data/sync-log.json ]; then
+              node -e "
+                const log = require('./data/sync-log.json')[0];
+                if (log) {
+                  console.log('- Added: ' + log.added.length + ' · Removed: ' + log.removed.length + ' · Repriced: ' + log.repriced.length);
+                  if (!log.ok) console.log('');
+                  if (!log.ok) console.log('> Run did not publish: ' + (log.note || 'see job log'));
+                }
+              "
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
