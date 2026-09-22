@@ -7,11 +7,18 @@ export interface FetchTextOptions {
   timeoutMs?: number;
   retries?: number;
   accept?: string;
+  /** Extra request headers, e.g. an Authorization credential. */
+  headers?: Record<string, string>;
 }
 
 export async function fetchText(
   url: string,
-  { timeoutMs = 20_000, retries = 2, accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }: FetchTextOptions = {},
+  {
+    timeoutMs = 20_000,
+    retries = 2,
+    accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    headers = {},
+  }: FetchTextOptions = {},
 ): Promise<string | null> {
   let lastError: unknown = null;
 
@@ -26,6 +33,7 @@ export async function fetchText(
           'User-Agent': USER_AGENT,
           Accept: accept,
           'Accept-Language': 'en-US,en;q=0.9',
+          ...headers,
         },
       });
 
@@ -33,6 +41,15 @@ export async function fetchText(
       if (response.status === 404 || response.status === 410) return null;
 
       if (!response.ok) {
+        // An authenticated endpoint rejecting us is a credential problem, not a
+        // transient one — say so plainly instead of returning an empty result
+        // that looks like "the dealer has no cars".
+        if ((response.status === 401 || response.status === 403) && Object.keys(headers).length) {
+          throw new Error(
+            `HTTP ${response.status} from ${new URL(url).host} — the API key was rejected or lacks access.`,
+          );
+        }
+
         // Back off on rate limiting and transient server errors; give up on
         // anything else, since retrying a 403 just annoys the origin.
         if (response.status === 429 || response.status >= 500) {

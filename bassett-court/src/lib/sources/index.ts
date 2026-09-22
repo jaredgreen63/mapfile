@@ -2,10 +2,12 @@ import type { SourceAdapter } from '../types';
 import { sitemapJsonLdAdapter } from './sitemap-jsonld';
 import { feedAdapter } from './feed';
 import { demoAdapter } from './demo';
+import { shiftlyAdapter } from './shiftly';
 
 export const adapters: Record<string, SourceAdapter> = {
   'sitemap-jsonld': sitemapJsonLdAdapter,
   feed: feedAdapter,
+  shiftly: shiftlyAdapter,
   demo: demoAdapter,
 };
 
@@ -19,4 +21,4 @@ export function getAdapter(name: string): SourceAdapter {
   return adapter;
 }
 
-export { sitemapJsonLdAdapter, feedAdapter, demoAdapter };
+export { sitemapJsonLdAdapter, feedAdapter, shiftlyAdapter, demoAdapter };

@@ -43,6 +43,29 @@ export const siteConfig = {
     enabled: true,
   },
 
+  /**
+   * Where the vehicles physically are. Named plainly on listings, detail pages
+   * and the footer, because a buyer should never have to guess which lot the
+   * car they are looking at is standing on.
+   */
+  location: {
+    dealer: 'Escude Chevrolet of Easley',
+    street: '5010 Old Easley Bridge Rd',
+    city: 'Easley',
+    state: 'SC',
+    zip: '29642',
+    /** Short form for listing cards. */
+    short: 'Easley, SC',
+    get oneLine() {
+      return `${this.street}, ${this.city}, ${this.state} ${this.zip}`;
+    },
+    get mapsUrl() {
+      return `https://maps.google.com/?q=${encodeURIComponent(
+        `${this.dealer}, ${this.street}, ${this.city}, ${this.state} ${this.zip}`,
+      )}`;
+    },
+  },
+
   contact: {
     name: 'Daniel Holbrook',
     phone: '(864) 707-1563',
@@ -124,7 +147,16 @@ export const siteConfig = {
      * Set to null to omit.
      */
     sourcingDisclosure:
-      'Vehicles shown are sourced through our dealer network and may be located off-site. Contact us to confirm current availability and arrange inspection or delivery.',
+      'Vehicles shown are located at Escude Chevrolet of Easley, 5010 Old Easley Bridge Rd, Easley, SC 29642. Contact us to confirm current availability and arrange a viewing, test drive or delivery.',
+  },
+
+  booking: {
+    /** How many selectable days the day picker offers, starting from today. */
+    daysAhead: 7,
+    timeSlots: ['Morning', 'Afternoon', 'Evening'] as const,
+    tradeInOptions: ['Not sure', 'Yes — I have a trade-in', 'No trade-in'] as const,
+    /** Shown under the submit button. */
+    reassurance: 'No payment or commitment — we reach out to confirm a time that works.',
   },
 
   finance: {
@@ -137,6 +169,7 @@ export const siteConfig = {
 
   nav: [
     { href: '/inventory', label: 'Inventory' },
+    { href: '/appointment', label: 'Book Appointment' },
     { href: '/financing', label: 'Financing' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },

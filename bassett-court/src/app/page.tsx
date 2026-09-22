@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import { getSnapshot } from '@/lib/inventory';
+import { toBookable } from '@/lib/booking';
 import { VehicleCard } from '@/components/VehicleCard';
-import { LeadForm } from '@/components/LeadForm';
+import { AppointmentForm } from '@/components/AppointmentForm';
+import { LocationNote } from '@/components/LocationNote';
+import { PulseDivider } from '@/components/PulseDivider';
 import { VehicleImage } from '@/components/VehicleImage';
 import { formatPrice } from '@/lib/pricing';
 import { relativeTime, vehicleTitle } from '@/lib/format';
@@ -11,6 +14,7 @@ import type { Vehicle } from '@/lib/types';
 export default async function HomePage() {
   const snapshot = await getSnapshot();
   const vehicles = snapshot.vehicles;
+  const bookable = toBookable(vehicles);
 
   const featured = [...vehicles]
     .sort((a, b) => (b.images.length ? 1 : 0) - (a.images.length ? 1 : 0) || (b.year ?? 0) - (a.year ?? 0))
@@ -34,12 +38,14 @@ export default async function HomePage() {
 
       <BodyStyleStrip vehicles={vehicles} />
 
+      <PulseDivider className="mt-16" />
+
       {featured.length ? (
         <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="eyebrow">Just arrived</p>
-              <h2 className="display-tight mt-2 text-[2.25rem] sm:text-[2.75rem]">Featured inventory</h2>
+              <p className="eyebrow">At {siteConfig.location.dealer}</p>
+              <h2 className="display-tight mt-2 text-[2.25rem] sm:text-[2.75rem]">What’s on the lot</h2>
             </div>
             <Link href="/inventory" className="btn btn-outline">
               View all {vehicles.length} vehicles →
@@ -57,7 +63,7 @@ export default async function HomePage() {
       )}
 
       <ValueProps />
-      <ContactBand />
+      <BookingBand vehicles={bookable} />
     </>
   );
 }
@@ -111,8 +117,8 @@ function Hero({
             <Link href="/inventory" className="btn btn-accent px-6 py-3 text-[0.9375rem]">
               Browse the inventory
             </Link>
-            <Link href="/contact" className="btn btn-outline px-6 py-3 text-[0.9375rem]">
-              Request a specific vehicle
+            <Link href="/appointment" className="btn btn-outline px-6 py-3 text-[0.9375rem]">
+              Book an appointment
             </Link>
           </div>
           </div>
@@ -194,7 +200,7 @@ function ValueProps() {
             <span className="numeric text-[0.75rem] font-semibold" style={{ color: 'var(--accent)' }}>
               {String(index + 1).padStart(2, '0')}
             </span>
-            <h3 className="display-tight mt-3 text-[1.5rem]">{item.title}</h3>
+            <h3 className="display-soft mt-3 text-[1.5rem]">{item.title}</h3>
             <p className="mt-3 text-[0.9375rem] leading-relaxed text-secondary">{item.body}</p>
           </div>
         ))}
@@ -203,42 +209,54 @@ function ValueProps() {
   );
 }
 
-function ContactBand() {
+function BookingBand({ vehicles }: { vehicles: ReturnType<typeof toBookable> }) {
   return (
     <section
+      id="book"
       className="border-t"
       style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--surface-sunken)' }}
     >
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
         <div>
-          <p className="eyebrow">Get in touch</p>
+          <p className="eyebrow">Book an appointment</p>
           <h2 className="display-tight mt-2 text-[2.25rem] sm:text-[2.75rem]">
-            Looking for something specific?
+            Come see it in person.
           </h2>
           <p className="mt-5 max-w-md text-[0.9375rem] leading-relaxed text-secondary">
-            Tell us the year, model and trim you have in mind. We will watch for it and let you know
-            the moment one lands — with the price, in writing, before you drive anywhere.
+            Pick a vehicle and a time that works. {siteConfig.contact.name} confirms every
+            appointment personally and checks the vehicle is still on the lot before you drive
+            anywhere.
           </p>
 
-          <div className="mt-8 space-y-1 text-[0.9375rem]">
-            <p>
-              <a href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} className="numeric font-semibold transition-colors hover:text-[var(--accent)]">
+          <div className="mt-8 max-w-sm">
+            <LocationNote />
+          </div>
+
+          <div className="mt-7">
+            <p className="eyebrow">Or call direct</p>
+            <p className="numeric mt-2 text-[1.75rem] font-bold tracking-tight">
+              <a
+                href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`}
+                className="transition-colors hover:text-[var(--accent)]"
+              >
                 {siteConfig.contact.phone}
               </a>
             </p>
-            <p>
-              <a href={`mailto:${siteConfig.contact.email}`} className="break-all text-secondary transition-colors hover:text-[var(--accent)]">
-                {siteConfig.contact.email}
-              </a>
+            <p className="mt-1 text-[0.875rem] text-secondary">
+              {siteConfig.contact.name} · {siteConfig.legalName}
             </p>
           </div>
         </div>
 
         <div
           className="rounded-[var(--radius-card)] p-6 sm:p-8"
-          style={{ backgroundColor: 'var(--surface-raised)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-card)' }}
+          style={{
+            backgroundColor: 'var(--surface-raised)',
+            border: '1px solid var(--border-subtle)',
+            boxShadow: 'var(--shadow-lift)',
+          }}
         >
-          <LeadForm />
+          <AppointmentForm vehicles={vehicles} />
         </div>
       </div>
     </section>
@@ -248,7 +266,7 @@ function ContactBand() {
 function EmptyInventoryNotice() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6">
-      <h2 className="display-tight text-[2rem]">Inventory is being prepared</h2>
+      <h2 className="display-soft text-[2rem]">Inventory is being prepared</h2>
       <p className="mt-4 text-[0.9375rem] leading-relaxed text-secondary">
         No snapshot has been published yet. Run <code className="numeric rounded px-1.5 py-0.5" style={{ backgroundColor: 'var(--surface-sunken)' }}>npm run sync</code>{' '}
         to pull the current catalogue, then redeploy.

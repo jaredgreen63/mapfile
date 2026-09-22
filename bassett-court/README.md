@@ -105,9 +105,49 @@ Set `INVENTORY_SOURCE_ADAPTER`, or `inventory.adapter` in `site.config.ts`.
 
 | Adapter | When to use it |
 | --- | --- |
-| `sitemap-jsonld` *(default)* | Read the source's XML sitemaps, then the schema.org markup on each vehicle detail page. Works without any cooperation from the source. |
-| `feed` | **Preferred.** An authorized inventory feed — CSV, JSON or XML. Set `INVENTORY_FEED_URL`. |
+| `shiftly` | **Preferred.** The Shiftly Auto API, where the inventory is already managed. Authorized, complete, and unaffected by dealer-website redesigns. |
+| `feed` | Any other authorized inventory feed — CSV, JSON or XML. Set `INVENTORY_FEED_URL`. |
+| `sitemap-jsonld` | Read the dealer site's XML sitemaps and the schema.org markup on each detail page. Needs no cooperation from the source, but is the most fragile option. |
 | `demo` | Deterministic sample data for development and preview deploys. |
+
+### Shiftly
+
+Shiftly does not publish API documentation, so the request shape is configured
+rather than hard-coded. Point it at the endpoint and it handles auth,
+pagination and field mapping:
+
+```bash
+INVENTORY_SOURCE_ADAPTER=shiftly
+SHIFTLY_API_URL="https://…/inventory"   # the endpoint
+SHIFTLY_API_KEY="…"                     # secret — never commit this
+SHIFTLY_AUTH_STYLE=bearer               # bearer (default) | header | query
+```
+
+Then confirm before publishing anything:
+
+```bash
+npm run sync -- --source=shiftly --dry-run
+```
+
+That prints how many records came back and what the diff would be, without
+touching `data/inventory.json`.
+
+The adapter sends the credential as an `Authorization: Bearer` header by
+default. If Shiftly wants it somewhere else, set `SHIFTLY_AUTH_STYLE=header`
+with `SHIFTLY_AUTH_HEADER`, or `SHIFTLY_AUTH_STYLE=query` with
+`SHIFTLY_AUTH_PARAM`. Field names are matched loosely, so most JSON shapes map
+without any further work — `vin`/`VIN Number`/`vehicleIdentificationNumber` all
+land in the same place, and so on for price, mileage, photos and the rest.
+
+Pagination follows an explicit `next` / `next_page` / `nextCursor` when the API
+returns one, and otherwise pages numerically. It stops on a repeated URL or a
+page identical to the one before it, so an API that ignores the page parameter
+cannot duplicate the catalogue.
+
+**The key is a secret.** It belongs in `.env.local` locally (git-ignored) and in
+a GitHub Actions secret in CI — not in the repository, a screenshot, or a chat
+message. The adapter never logs it, never writes it to the snapshot, and strips
+it from error messages; there are unit tests asserting exactly that.
 
 The `sitemap-jsonld` adapter reads and obeys `robots.txt` (including
 `Crawl-delay`), identifies itself with a descriptive User-Agent, limits itself
@@ -154,9 +194,13 @@ Configure in **Settings → Secrets and variables → Actions**:
 
 | Name | Kind | Purpose |
 | --- | --- | --- |
-| `INVENTORY_SOURCE_URL` | Variable | Upstream site, if different from the config default |
-| `INVENTORY_SOURCE_ADAPTER` | Variable | `sitemap-jsonld`, `feed` or `demo` |
-| `INVENTORY_FEED_URL` | Secret | Authorized feed URL, for the `feed` adapter |
+| `INVENTORY_SOURCE_ADAPTER` | Variable | `shiftly`, `feed`, `sitemap-jsonld` or `demo` |
+| `SHIFTLY_API_URL` | Variable | The Shiftly inventory endpoint |
+| `SHIFTLY_API_KEY` | **Secret** | The Shiftly credential |
+| `SHIFTLY_AUTH_STYLE` | Variable | `bearer` (default), `header` or `query` |
+| `SHIFTLY_DEALER_ID` | Variable | Optional, sent as `dealer_id` |
+| `INVENTORY_SOURCE_URL` | Variable | Dealer site, for the crawl adapter |
+| `INVENTORY_FEED_URL` | Secret | Feed URL, for the `feed` adapter |
 | `DEPLOY_HOOK_URL` | Secret | Optional — only if your host does not redeploy on push |
 
 You can also run it by hand from the Actions tab, choosing the adapter and
@@ -229,12 +273,17 @@ bassett-court/
 
 Home page with live inventory stats and a featured vehicle · inventory browser
 with search, nine facets, five sort orders and shareable filter URLs · vehicle
-detail pages with gallery, spec table, equipment list, payment estimator and an
-enquiry form · financing, about, contact and privacy pages · light and dark
-themes with a toggle and no flash on load · `sitemap.xml` and `robots.txt`
-generated from live data · schema.org `Car` markup on every listing for vehicle
-rich results · skip link, focus rings, labelled controls and reduced-motion
-support throughout.
+detail pages with gallery, spec table, equipment list and payment estimator ·
+an appointment booking flow (vehicle picker driven by live inventory, day and
+time chips, trade-in, free-text notes) reachable from every listing, the
+detail page, the home page and `/appointment` · financing, about, contact and
+privacy pages · dark by default with a light toggle and no flash on load ·
+`sitemap.xml` and `robots.txt` generated from live data · schema.org `Car`
+markup on every listing for vehicle rich results · skip link, focus rings,
+labelled controls and reduced-motion support throughout.
+
+Every listing states that the vehicle is at **Escude Chevrolet of Easley,
+5010 Old Easley Bridge Rd, Easley, SC 29642**, with a directions link.
 
 Listings without photography render a body-style silhouette tinted from the
 vehicle's own exterior colour, so the grid looks deliberate before real photos
@@ -273,10 +322,14 @@ assumptions rather than facts, so check them:
   the site renders "Liberty, SC" wherever an address appears. Fill the field in
   and the full address appears everywhere automatically.
 
-Also before launch: set `LEAD_WEBHOOK_URL` so enquiries actually reach an inbox,
-set `NEXT_PUBLIC_SITE_URL` to the real domain, and run
-`npm run sync -- --dry-run` against the live source to confirm the adapter finds
-what you expect.
+Also before launch: set `LEAD_WEBHOOK_URL` so appointment requests actually
+reach an inbox, set `NEXT_PUBLIC_SITE_URL` to the real domain, and run
+`npm run sync -- --source=shiftly --dry-run` to confirm the adapter finds what
+you expect.
+
+**Appointment requests currently go to the server log only.** `LEAD_WEBHOOK_URL`
+is the single setting that makes the booking form deliver; without it a real
+customer's request is written to a log nobody is watching.
 
 ---
 

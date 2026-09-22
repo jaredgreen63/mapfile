@@ -38,7 +38,7 @@ export default function PrivacyPage() {
       <section className="mx-auto mt-12 max-w-3xl space-y-9 px-4 sm:px-6 lg:px-8">
         {sections.map((section) => (
           <div key={section.title}>
-            <h2 className="display-tight text-[1.5rem]">{section.title}</h2>
+            <h2 className="display-soft text-[1.5rem]">{section.title}</h2>
             <p className="mt-3 text-[0.9375rem] leading-relaxed text-secondary">{section.body}</p>
           </div>
         ))}

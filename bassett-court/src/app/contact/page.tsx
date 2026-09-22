@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/PageHeader';
-import { LeadForm } from '@/components/LeadForm';
+import { AppointmentForm } from '@/components/AppointmentForm';
+import { LocationNote } from '@/components/LocationNote';
+import { getVehicles } from '@/lib/inventory';
+import { toBookable } from '@/lib/booking';
 import { formatAddress } from '@/lib/format';
 import { siteConfig } from '~/site.config';
 
@@ -9,7 +12,8 @@ export const metadata: Metadata = {
   description: `Reach ${siteConfig.name} by phone, email or the enquiry form.`,
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const bookable = toBookable(await getVehicles());
   const { contact } = siteConfig;
   const address = formatAddress(contact.address);
 
@@ -60,6 +64,13 @@ export default function ContactPage() {
           </div>
 
           <div>
+            <h2 className="eyebrow">Where the vehicles are</h2>
+            <div className="mt-3 max-w-xs">
+              <LocationNote />
+            </div>
+          </div>
+
+          <div>
             <h2 className="eyebrow">Hours</h2>
             <ul className="mt-3 max-w-xs space-y-2 text-[0.9375rem] text-secondary">
               {contact.hours.map((entry) => (
@@ -76,9 +87,9 @@ export default function ContactPage() {
           className="h-fit rounded-[var(--radius-card)] p-6 sm:p-8"
           style={{ backgroundColor: 'var(--surface-raised)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-card)' }}
         >
-          <h2 className="display-tight text-[1.5rem]">Send a message</h2>
+          <h2 className="display-soft text-[1.5rem]">Book or ask a question</h2>
           <div className="mt-5">
-            <LeadForm />
+            <AppointmentForm vehicles={bookable} compact />
           </div>
         </div>
       </div>

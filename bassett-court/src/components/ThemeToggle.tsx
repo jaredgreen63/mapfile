@@ -9,8 +9,8 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const stored = safeRead();
-    const initial: Theme =
-      stored ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    // Dark is the site's look. Only a stored choice moves us off it.
+    const initial: Theme = stored ?? 'dark';
     setTheme(initial);
   }, []);
 

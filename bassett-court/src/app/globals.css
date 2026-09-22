@@ -5,7 +5,7 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+  --font-display: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   /* Ink — the structural navy the brand is built on. */
   --color-ink-50: #f4f6f8;
@@ -38,11 +38,32 @@
  * Semantic surface tokens. Components reference these rather than palette
  * steps, so light and dark stay in sync from one place.
  */
+/*
+ * Dark is the default. Light stays a first-class option behind the toggle and
+ * is selected by [data-theme='light'] or by an OS light preference.
+ */
 :root {
+  --surface-page: #0a0e14;
+  --surface-raised: #121821;
+  --surface-sunken: #0e131b;
+  --surface-inverse: #f4f6f8;
+  --text-primary: #f2f5f8;
+  --text-secondary: #aab4c2;
+  --text-muted: #7d8899;
+  --border-subtle: #1f2836;
+  --border-strong: #303c4c;
+  --accent: #d4a35f;
+  --accent-contrast: #0a0e14;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.45), 0 10px 28px -14px rgb(0 0 0 / 0.7);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.55), 0 28px 56px -28px rgb(0 0 0 / 0.85);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
   --surface-page: #fbfaf8;
   --surface-raised: #ffffff;
   --surface-sunken: #f2f1ed;
-  --surface-inverse: #0b1118;
+  --surface-inverse: #0a0e14;
   --text-primary: #141c27;
   --text-secondary: #56616f;
   --text-muted: #7d8794;
@@ -53,42 +74,6 @@
   --shadow-card: 0 1px 2px rgb(20 28 39 / 0.04), 0 8px 24px -12px rgb(20 28 39 / 0.14);
   --shadow-lift: 0 2px 4px rgb(20 28 39 / 0.06), 0 20px 40px -20px rgb(20 28 39 / 0.26);
   color-scheme: light;
-}
-
-:root:not([data-theme='light']) {
-  @media (prefers-color-scheme: dark) {
-    --surface-page: #0b1118;
-    --surface-raised: #141c27;
-    --surface-sunken: #101822;
-    --surface-inverse: #f4f6f8;
-    --text-primary: #eef1f5;
-    --text-secondary: #a6b1bf;
-    --text-muted: #7f8b9a;
-    --border-subtle: #222d3b;
-    --border-strong: #32404f;
-    --accent: #cc9f5c;
-    --accent-contrast: #0b1118;
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-    --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.5), 0 24px 48px -24px rgb(0 0 0 / 0.8);
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme='dark'] {
-  --surface-page: #0b1118;
-  --surface-raised: #141c27;
-  --surface-sunken: #101822;
-  --surface-inverse: #f4f6f8;
-  --text-primary: #eef1f5;
-  --text-secondary: #a6b1bf;
-  --text-muted: #7f8b9a;
-  --border-subtle: #222d3b;
-  --border-strong: #32404f;
-  --accent: #cc9f5c;
-  --accent-contrast: #0b1118;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.5), 0 24px 48px -24px rgb(0 0 0 / 0.8);
-  color-scheme: dark;
 }
 
 @layer base {
@@ -145,18 +130,73 @@
     font-feature-settings: 'tnum' 1;
   }
 
+  /* Headings carry real weight now — the old high-contrast serif went thin
+     and washed out against a dark background. */
   .display-tight {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
-    line-height: 1.04;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+  }
+
+  .display-soft {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    line-height: 1.12;
   }
 
   .eyebrow {
     font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-weight: 700;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--text-muted);
+  }
+
+  /* Listing cards wear an accent cap, the way the house cards do. */
+  .card-capped {
+    position: relative;
+  }
+  .card-capped::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    z-index: 1;
+  }
+
+  .price {
+    color: var(--accent);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+
+  /* Day / time chips in the booking form. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.625rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--surface-page);
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: border-color 150ms var(--ease-out-soft), color 150ms var(--ease-out-soft),
+      background-color 150ms var(--ease-out-soft);
+  }
+  .chip:hover { border-color: var(--border-strong); color: var(--text-primary); }
+  .chip[aria-pressed='true'] {
+    border-color: var(--accent);
+    background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--text-primary);
   }
 
   .btn {
@@ -166,7 +206,8 @@
     gap: 0.5rem;
     border-radius: 0.5rem;
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.005em;
     padding: 0.625rem 1.125rem;
     transition: background-color 180ms var(--ease-out-soft), color 180ms var(--ease-out-soft),
       border-color 180ms var(--ease-out-soft), transform 180ms var(--ease-out-soft);
@@ -176,10 +217,13 @@
 
   .btn-primary {
     background-color: var(--text-primary);
-    color: var(--surface-raised);
+    color: var(--surface-page);
     border: 1px solid transparent;
   }
   .btn-primary:hover { background-color: var(--accent); color: var(--accent-contrast); }
+
+  /* Full-width action on a listing card. */
+  .btn-block { width: 100%; }
 
   .btn-accent {
     background-color: var(--accent);

@@ -10,7 +10,7 @@ import { chromium } from 'playwright';
 
 const base = process.env.BASE ?? 'http://127.0.0.1:3100';
 const widths = [360, 390, 414, 640, 768, 820, 1024, 1280, 1440, 1920];
-const paths = ['/', '/inventory', '/financing', '/about', '/contact', '/privacy'];
+const paths = ['/', '/inventory', '/appointment', '/financing', '/about', '/contact', '/privacy'];
 
 // Use a preinstalled Chromium when the environment provides one (as CI images
 // and dev containers often do), otherwise let Playwright resolve its own.

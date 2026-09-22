@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Wordmark } from './Logo';
 import { siteConfig } from '~/site.config';
 import { formatAddress, formatDateTime } from '@/lib/format';
+import { LocationNote } from './LocationNote';
 
 export function SiteFooter({ syncedAt, vehicleCount }: { syncedAt: string; vehicleCount: number }) {
   const { contact } = siteConfig;
@@ -42,6 +43,7 @@ export function SiteFooter({ syncedAt, vehicleCount }: { syncedAt: string; vehic
             <h2 className="eyebrow">Company</h2>
             <ul className="mt-4 space-y-2.5 text-[0.8125rem]">
               {[
+                { href: '/appointment', label: 'Book an Appointment' },
                 { href: '/financing', label: 'Financing' },
                 { href: '/about', label: 'About Us' },
                 { href: '/contact', label: 'Contact' },
@@ -78,6 +80,25 @@ export function SiteFooter({ syncedAt, vehicleCount }: { syncedAt: string; vehic
                 </a>
               </p>
             </address>
+
+            <h2 className="eyebrow mt-6">Vehicles located at</h2>
+            <p className="mt-3 text-[0.8125rem] font-semibold leading-snug">
+              {siteConfig.location.dealer}
+            </p>
+            <address className="mt-1 text-[0.8125rem] not-italic leading-relaxed text-secondary">
+              {siteConfig.location.street}
+              <br />
+              {siteConfig.location.city}, {siteConfig.location.state} {siteConfig.location.zip}
+            </address>
+            <a
+              href={siteConfig.location.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-[0.8125rem] font-semibold transition-opacity hover:opacity-80"
+              style={{ color: 'var(--accent)' }}
+            >
+              Get directions →
+            </a>
 
             <h2 className="eyebrow mt-6">Hours</h2>
             <ul className="mt-3 space-y-1.5 text-[0.8125rem] text-secondary">

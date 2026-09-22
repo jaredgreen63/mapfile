@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Instrument_Serif } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 
 import { SiteHeader } from '@/components/SiteHeader';
@@ -15,9 +15,11 @@ const inter = Inter({
   display: 'swap',
 });
 
-const display = Instrument_Serif({
+// Headings want weight and tight tracking to hold up on a dark page; a light
+// high-contrast serif does neither.
+const display = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: '400',
+  weight: ['700', '800'],
   variable: '--font-display',
   display: 'swap',
 });
@@ -43,10 +45,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbfaf8' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b1118' },
-  ],
+  themeColor: '#0a0e14',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

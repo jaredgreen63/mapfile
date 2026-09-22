@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { getSimilarVehicles, getVehicleBySlug, getVehicles } from '@/lib/inventory';
+import { toBookable } from '@/lib/booking';
 import { Gallery } from '@/components/Gallery';
-import { LeadForm } from '@/components/LeadForm';
+import { AppointmentForm } from '@/components/AppointmentForm';
+import { LocationNote } from '@/components/LocationNote';
 import { PaymentEstimator } from '@/components/PaymentEstimator';
 import { VehicleCard } from '@/components/VehicleCard';
 import { formatMileage, formatPrice } from '@/lib/pricing';
@@ -48,6 +50,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
   if (!vehicle) notFound();
 
   const similar = await getSimilarVehicles(vehicle);
+  const bookable = toBookable(await getVehicles());
   const title = vehicleFullTitle(vehicle);
 
   return (
@@ -67,13 +70,13 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
           <Gallery vehicle={vehicle} />
 
           <section>
-            <h2 className="display-tight text-[1.75rem]">Specifications</h2>
+            <h2 className="display-soft text-[1.75rem]">Specifications</h2>
             <SpecTable vehicle={vehicle} />
           </section>
 
           {vehicle.features.length ? (
             <section>
-              <h2 className="display-tight text-[1.75rem]">Equipment</h2>
+              <h2 className="display-soft text-[1.75rem]">Equipment</h2>
               <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
                 {vehicle.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2.5 text-[0.875rem] text-secondary">
@@ -89,7 +92,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
 
           {vehicle.description ? (
             <section>
-              <h2 className="display-tight text-[1.75rem]">About this vehicle</h2>
+              <h2 className="display-soft text-[1.75rem]">About this vehicle</h2>
               <p className="mt-4 max-w-2xl text-[0.9375rem] leading-relaxed text-secondary">
                 {vehicle.description}
               </p>
@@ -111,9 +114,9 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
                 {conditionLabel(vehicle.condition)}
               </span>
 
-              <h1 className="display-tight mt-3 text-[2rem] leading-[1.1]">{title}</h1>
+              <h1 className="display-tight mt-3 text-[2rem] leading-[1.08]">{title}</h1>
 
-              <p className="numeric mt-4 text-[2.25rem] font-semibold leading-none tracking-tight">
+              <p className="price mt-4 text-[2.25rem] leading-none">
                 {formatPrice(vehicle.price, siteConfig.pricing.callForPriceLabel)}
               </p>
 
@@ -145,28 +148,27 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
 
             {vehicle.price != null ? <PaymentEstimator price={vehicle.price} /> : null}
 
+            <LocationNote />
+
             <div
               className="rounded-[var(--radius-card)] p-5"
               style={{ backgroundColor: 'var(--surface-raised)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-card)' }}
             >
-              <h2 className="display-tight text-[1.25rem]">Check availability</h2>
-              <div className="mt-4">
-                <LeadForm vehicleId={vehicle.id} vehicleLabel={title} compact />
+              <h2 className="display-soft text-[1.25rem]">Book a test drive</h2>
+              <p className="mt-1 text-[0.8125rem] text-secondary">
+                {siteConfig.contact.name} confirms every appointment personally.
+              </p>
+              <div className="mt-5">
+                <AppointmentForm vehicles={bookable} defaultVehicleId={vehicle.id} compact />
               </div>
             </div>
-
-            {siteConfig.inventory.sourcingDisclosure ? (
-              <p className="text-[0.6875rem] leading-relaxed text-muted">
-                {siteConfig.inventory.sourcingDisclosure}
-              </p>
-            ) : null}
           </div>
         </aside>
       </div>
 
       {similar.length ? (
         <section className="mt-20">
-          <h2 className="display-tight text-[1.75rem]">Similar vehicles</h2>
+          <h2 className="display-soft text-[1.75rem]">Similar vehicles</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {similar.map((entry) => (
               <VehicleCard key={entry.id} vehicle={entry} />

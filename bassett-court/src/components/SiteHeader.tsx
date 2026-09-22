@@ -35,7 +35,7 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
           {logo}
         </Link>
 
-        <nav className="ml-6 hidden items-center gap-1 md:flex" aria-label="Primary">
+        <nav className="ml-6 hidden items-center gap-1 lg:flex" aria-label="Primary">
           {siteConfig.nav.map((item) => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
@@ -55,7 +55,7 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
         <div className="ml-auto flex items-center gap-2">
           <a
             href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`}
-            className="numeric hidden text-[0.8125rem] font-semibold transition-colors lg:inline"
+            className="numeric hidden text-[0.8125rem] font-bold transition-colors xl:inline"
             style={{ color: 'var(--text-secondary)' }}
           >
             {siteConfig.contact.phone}
@@ -71,7 +71,7 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label="Toggle navigation"
-            className="grid h-9 w-9 place-items-center rounded-lg border md:hidden"
+            className="grid h-9 w-9 place-items-center rounded-lg border lg:hidden"
             style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }}
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
@@ -84,7 +84,7 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
       {open ? (
         <nav
           id="mobile-nav"
-          className="md:hidden"
+          className="lg:hidden"
           style={{ borderTop: '1px solid var(--border-subtle)', backgroundColor: 'var(--surface-raised)' }}
           aria-label="Primary mobile"
         >
@@ -102,6 +102,13 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
             <Link href="/inventory" className="btn btn-primary mt-2">
               Browse Inventory
             </Link>
+            <a
+              href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`}
+              className="numeric mt-2 rounded-lg px-3 py-2.5 text-center text-sm font-bold"
+              style={{ color: 'var(--accent)' }}
+            >
+              Call {siteConfig.contact.phone}
+            </a>
           </div>
         </nav>
       ) : null}

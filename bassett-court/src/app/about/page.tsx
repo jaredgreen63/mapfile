@@ -23,7 +23,7 @@ export default async function AboutPage() {
 
       <section className="mx-auto mt-14 max-w-3xl space-y-10 px-4 sm:px-6 lg:px-8">
         <div>
-          <h2 className="display-tight text-[1.75rem]">Sourcing</h2>
+          <h2 className="display-soft text-[1.75rem]">Sourcing</h2>
           <p className="mt-4 text-[0.9375rem] leading-relaxed text-secondary">
             Our catalogue is assembled from vehicles available through our dealer network and refreshed
             automatically. When a vehicle becomes available it appears here; when it is sold or withdrawn
@@ -38,7 +38,7 @@ export default async function AboutPage() {
         </div>
 
         <div>
-          <h2 className="display-tight text-[1.75rem]">Pricing</h2>
+          <h2 className="display-soft text-[1.75rem]">Pricing</h2>
           <p className="mt-4 text-[0.9375rem] leading-relaxed text-secondary">
             Each vehicle carries a single published price. It covers the vehicle itself; tax, title,
             registration and documentation fees are separate and are itemised before you sign anything.
@@ -48,7 +48,7 @@ export default async function AboutPage() {
         </div>
 
         <div>
-          <h2 className="display-tight text-[1.75rem]">Delivery</h2>
+          <h2 className="display-soft text-[1.75rem]">Delivery</h2>
           <p className="mt-4 text-[0.9375rem] leading-relaxed text-secondary">
             You are welcome to inspect any vehicle in person. If travelling is impractical, we arrange
             transport and coordinate the paperwork remotely. Either way we confirm condition and

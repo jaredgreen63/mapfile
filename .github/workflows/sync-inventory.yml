@@ -21,7 +21,7 @@ on:
         required: false
         default: ''
         type: choice
-        options: ['', 'sitemap-jsonld', 'feed', 'demo']
+        options: ['', 'shiftly', 'feed', 'sitemap-jsonld', 'demo']
       force:
         description: 'Bypass the shrink guard (use when a large drop is genuine)'
         required: false
@@ -61,6 +61,13 @@ jobs:
           INVENTORY_SOURCE_URL: ${{ vars.INVENTORY_SOURCE_URL }}
           INVENTORY_SOURCE_ADAPTER: ${{ vars.INVENTORY_SOURCE_ADAPTER }}
           INVENTORY_FEED_URL: ${{ secrets.INVENTORY_FEED_URL }}
+          # Shiftly Auto. The key is a secret; the rest are plain variables.
+          SHIFTLY_API_URL: ${{ vars.SHIFTLY_API_URL }}
+          SHIFTLY_API_KEY: ${{ secrets.SHIFTLY_API_KEY }}
+          SHIFTLY_AUTH_STYLE: ${{ vars.SHIFTLY_AUTH_STYLE }}
+          SHIFTLY_AUTH_HEADER: ${{ vars.SHIFTLY_AUTH_HEADER }}
+          SHIFTLY_AUTH_PARAM: ${{ vars.SHIFTLY_AUTH_PARAM }}
+          SHIFTLY_DEALER_ID: ${{ vars.SHIFTLY_DEALER_ID }}
         run: |
           ARGS=""
           if [ -n "${{ inputs.adapter }}" ]; then ARGS="$ARGS --source=${{ inputs.adapter }}"; fi

@@ -43,7 +43,7 @@ export default function FinancingPage() {
           className="rounded-[var(--radius-card)] p-8 sm:p-10"
           style={{ backgroundColor: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)' }}
         >
-          <h2 className="display-tight text-[1.75rem]">What to have ready</h2>
+          <h2 className="display-soft text-[1.75rem]">What to have ready</h2>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {[
               'Valid driver’s licence',
