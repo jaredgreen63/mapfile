@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/PageHeader';
 import { LeadForm } from '@/components/LeadForm';
+import { formatAddress } from '@/lib/format';
 import { siteConfig } from '~/site.config';
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   const { contact } = siteConfig;
+  const address = formatAddress(contact.address);
 
   return (
     <div className="pb-24">
@@ -21,6 +23,12 @@ export default function ContactPage() {
 
       <div className="mx-auto mt-12 grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,1fr)] lg:px-8">
         <div className="space-y-9">
+          <div>
+            <h2 className="eyebrow">Who you will speak to</h2>
+            <p className="mt-2.5 text-[1.0625rem] font-medium">{contact.name}</p>
+            <p className="mt-0.5 text-[0.875rem] text-secondary">{siteConfig.legalName}</p>
+          </div>
+
           <div>
             <h2 className="eyebrow">By phone</h2>
             <p className="numeric mt-2.5 text-[1.5rem] font-semibold tracking-tight">
@@ -40,11 +48,14 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <h2 className="eyebrow">In person</h2>
+            <h2 className="eyebrow">Where we are</h2>
             <address className="mt-2.5 text-[0.9375rem] not-italic leading-relaxed text-secondary">
-              {contact.address.street}
-              <br />
-              {contact.address.city}, {contact.address.state} {contact.address.zip}
+              {address.lines.map((line, index) => (
+                <span key={line}>
+                  {index > 0 ? <br /> : null}
+                  {line}
+                </span>
+              ))}
             </address>
           </div>
 

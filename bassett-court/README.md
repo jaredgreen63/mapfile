@@ -37,18 +37,30 @@ once the source is set up (see below).
 
 ---
 
-## Your logo
+## Branding
 
-Drop the file at `public/logo.svg` (`.png`, `.webp` and `.jpg` also work) and it
-appears in the header on the next build. Nothing else to change.
+The header shows the lion from the company business card beside a "Bassett
+Court / HOLDINGS, LLC." wordmark. The same artwork is the favicon and appears on
+the Open Graph card that renders when the site is shared.
 
-Until that file exists the site renders a typographic wordmark — "Bassett Court
-/ HOLDINGS" with a BC monogram — so the header never shows a broken image while
-the real asset is still in flight. An SVG around 200×48 with transparent
-background works best; it is rendered at 36–40px tall and must read on both a
-light and a dark backdrop.
+| File | Used for |
+| --- | --- |
+| `public/logo-mark.png` | The lion mark in the header (512×512) |
+| `src/app/icon.png` | Browser tab / bookmark icon |
+| `src/app/apple-icon.png` | iOS home-screen icon |
+| `src/app/opengraph-image.png` | Link preview card (1200×630) |
 
----
+These were extracted from a phone photo of the printed card, colour-corrected
+and deskewed. That is good enough at the sizes used, but it is a photo of a
+print: if Daniel has the original lion artwork as a file, dropping it in at
+`public/logo-mark.png` (square, 512px or larger) will be visibly sharper. Do the
+same for `src/app/icon.png` and `src/app/opengraph-image.png` if you want those
+crisp too.
+
+If you later have a full lock-up — mark and name drawn together as one image —
+put it at `public/logo.svg` and it replaces the header lock-up entirely. No code
+change either way; both paths are checked at build time, with a plain
+typographic wordmark as the final fallback so the header is never broken.
 
 ## Pricing
 
@@ -249,10 +261,22 @@ Two things need your attention, and neither is a code change:
    state-specific and the placeholder disclaimers here — including the privacy
    page — are a starting point for your counsel, not legal advice.
 
-Also worth doing before launch: replace the placeholder phone, email, address
-and hours in `site.config.ts`; set `LEAD_WEBHOOK_URL`; set
-`NEXT_PUBLIC_SITE_URL`; and run `npm run sync -- --dry-run` against the live
-source to confirm the adapter finds what you expect.
+Contact details are set from the company business card: Daniel Holbrook,
+(864) 707-1563, danholbrook08@gmail.com, Liberty, SC. Two things there are
+assumptions rather than facts, so check them:
+
+- **Hours read "By appointment."** No street address or opening hours were
+  supplied, and advertising walk-in hours for an address that is not published
+  would be inventing them. Set real hours in `site.config.ts` once there is a
+  storefront.
+- **No street address is published.** `contact.address.street` is `null`, and
+  the site renders "Liberty, SC" wherever an address appears. Fill the field in
+  and the full address appears everywhere automatically.
+
+Also before launch: set `LEAD_WEBHOOK_URL` so enquiries actually reach an inbox,
+set `NEXT_PUBLIC_SITE_URL` to the real domain, and run
+`npm run sync -- --dry-run` against the live source to confirm the adapter finds
+what you expect.
 
 ---
 

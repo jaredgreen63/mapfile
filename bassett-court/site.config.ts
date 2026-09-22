@@ -12,6 +12,8 @@ export type PriceRounding =
 
 export const siteConfig = {
   name: 'Bassett Court Holdings',
+  /** Full registered entity name, used where the legal name belongs. */
+  legalName: 'Bassett Court Holdings, LLC.',
   shortName: 'Bassett Court',
   tagline: 'Considered vehicles, plainly priced.',
   description:
@@ -29,24 +31,36 @@ export const siteConfig = {
    * nothing looks broken before the asset lands.
    */
   logo: {
+    /**
+     * Optional full lock-up (mark + name as one image). Drop a file here and it
+     * replaces the header lock-up entirely.
+     */
     src: '/logo.svg',
-    alt: 'Bassett Court Holdings',
-    /** Set false to force the wordmark even when the file exists. */
+    /** The lion mark, taken from the company business card. */
+    mark: '/logo-mark.png',
+    alt: 'Bassett Court Holdings, LLC.',
+    /** Set false to force the plain typographic wordmark. */
     enabled: true,
   },
 
   contact: {
-    phone: '(000) 000-0000',
-    email: 'sales@bassettcourtholdings.com',
+    name: 'Daniel Holbrook',
+    phone: '(864) 707-1563',
+    email: 'danholbrook08@gmail.com',
     address: {
-      street: '000 Bassett Court',
-      city: 'City',
-      state: 'ST',
-      zip: '00000',
+      /** No street address published yet — set this and it renders everywhere. */
+      street: null as string | null,
+      city: 'Liberty',
+      state: 'SC',
+      stateFull: 'South Carolina',
+      zip: '',
     },
+    /**
+     * Viewings are by appointment until a storefront address is published.
+     * Replace with real opening hours once there is one.
+     */
     hours: [
-      { days: 'Monday – Friday', open: '9:00 AM', close: '7:00 PM' },
-      { days: 'Saturday', open: '9:00 AM', close: '5:00 PM' },
+      { days: 'Monday – Saturday', open: 'By appointment', close: '' },
       { days: 'Sunday', open: 'Closed', close: '' },
     ],
   },

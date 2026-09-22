@@ -38,3 +38,20 @@ export function relativeTime(iso: string): string {
   }
   return formatter.format(-Math.round(value), 'year');
 }
+
+/**
+ * Render the business address from whichever parts are actually filled in.
+ * Street and ZIP are optional, so a city-and-state-only listing reads cleanly
+ * instead of showing stray commas or an empty line.
+ */
+export function formatAddress(address: {
+  street?: string | null;
+  city: string;
+  state: string;
+  zip?: string;
+}): { lines: string[]; oneLine: string } {
+  const locality = [address.city, address.state].filter(Boolean).join(', ');
+  const withZip = [locality, address.zip].filter(Boolean).join(' ').trim();
+  const lines = [address.street, withZip].filter((part): part is string => Boolean(part));
+  return { lines, oneLine: lines.join(', ') };
+}

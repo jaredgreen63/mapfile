@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { Wordmark } from './Logo';
 import { siteConfig } from '~/site.config';
-import { formatDateTime } from '@/lib/format';
+import { formatAddress, formatDateTime } from '@/lib/format';
 
 export function SiteFooter({ syncedAt, vehicleCount }: { syncedAt: string; vehicleCount: number }) {
   const { contact } = siteConfig;
+  const address = formatAddress(contact.address);
   const year = new Date().getFullYear();
 
   return (
@@ -59,9 +60,12 @@ export function SiteFooter({ syncedAt, vehicleCount }: { syncedAt: string; vehic
             <h2 className="eyebrow">Visit</h2>
             <address className="mt-4 space-y-2.5 text-[0.8125rem] not-italic text-secondary">
               <p>
-                {contact.address.street}
-                <br />
-                {contact.address.city}, {contact.address.state} {contact.address.zip}
+                {address.lines.map((line, index) => (
+                  <span key={line}>
+                    {index > 0 ? <br /> : null}
+                    {line}
+                  </span>
+                ))}
               </p>
               <p>
                 <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="numeric transition-colors hover:text-[var(--accent)]">
@@ -91,7 +95,7 @@ export function SiteFooter({ syncedAt, vehicleCount }: { syncedAt: string; vehic
           className="mt-12 flex flex-col gap-4 pt-7 text-[0.75rem] text-muted md:flex-row md:items-center md:justify-between"
           style={{ borderTop: '1px solid var(--border-subtle)' }}
         >
-          <p>© {year} {siteConfig.name}. All rights reserved.</p>
+          <p>© {year} {siteConfig.legalName} All rights reserved.</p>
           <p className="numeric">
             {vehicleCount} vehicle{vehicleCount === 1 ? '' : 's'} listed · inventory updated {formatDateTime(syncedAt)}
           </p>

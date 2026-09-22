@@ -16,7 +16,7 @@ export default async function AboutPage() {
   return (
     <div className="pb-24">
       <PageHeader
-        eyebrow="About"
+        eyebrow={`${siteConfig.legalName} · ${siteConfig.contact.address.city}, ${siteConfig.contact.address.stateFull}`}
         title="How we work"
         lede={siteConfig.description}
       />
