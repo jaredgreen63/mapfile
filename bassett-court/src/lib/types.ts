@@ -112,4 +112,9 @@ export interface AdapterOptions {
   /** Milliseconds between upstream requests. */
   politenessDelayMs?: number;
   log?: (message: string) => void;
+  /**
+   * Diagnostic hook. Receives the source records exactly as the provider sent
+   * them, before any field mapping, so `--probe` can report what was ignored.
+   */
+  onRawRows?: (rows: Record<string, unknown>[]) => void;
 }

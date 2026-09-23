@@ -72,6 +72,7 @@ export function redact(text: string, secret?: string): string {
 export async function fetchApiInventory(
   config: ApiSourceConfig,
   log: (message: string) => void,
+  onRawRows?: (rows: Record<string, unknown>[]) => void,
 ): Promise<RawVehicle[]> {
   if (!config.url) {
     throw new Error(`${config.name}: no endpoint configured.`);
@@ -146,6 +147,7 @@ export async function fetchApiInventory(
   }
 
   log(`collected ${collected.length} record(s) across ${page - 1} page(s)`);
+  onRawRows?.(collected);
   return collected.map(mapRow);
 }
 
@@ -181,6 +183,7 @@ export function createApiAdapter(config: Omit<ApiSourceConfig, 'url' | 'apiKey'>
       return fetchApiInventory(
         { ...config, url: url || options.feedUrl || '', apiKey },
         (message) => options.log?.(message),
+        options.onRawRows,
       );
     },
   };

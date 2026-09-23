@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { mapRow, parseCsv, parseFeedBody, parseXmlFeed } from '../src/lib/sources/feed';
+import { mapRow, parseCsv, parseFeedBody, parseXmlFeed, unmappedKeys } from '../src/lib/sources/feed';
 
 describe('parseCsv', () => {
   it('handles quoted fields containing commas and escaped quotes', () => {
@@ -101,5 +101,26 @@ describe('parseFeedBody', () => {
   it('detects XML and CSV', () => {
     assert.equal(parseFeedBody('<inventory><vehicle><vin>a</vin></vehicle><vehicle><vin>b</vin></vehicle></inventory>').length, 2);
     assert.equal(parseFeedBody('vin,make\na,Chevrolet').length, 1);
+  });
+});
+
+describe('unmappedKeys', () => {
+  it('names the populated fields the mapper does not recognise', () => {
+    const ignored = unmappedKeys({
+      VIN: '1GCUYDED5KZ123456',
+      Make: 'Chevrolet',
+      dealer_lot_code: 'ESC-EASLEY',
+      days_on_lot: 14,
+    });
+    assert.deepEqual(ignored.sort(), ['days_on_lot', 'dealer_lot_code']);
+  });
+
+  it('ignores recognised keys whatever their spelling', () => {
+    assert.deepEqual(unmappedKeys({ 'VIN Number': 'x', 'Selling Price': '1', Manufacturer: 'Chevrolet' }), []);
+  });
+
+  it('does not report keys that are present but empty', () => {
+    // An empty column tells us nothing about the provider's schema.
+    assert.deepEqual(unmappedKeys({ some_extra_field: '', another: null, third: undefined }), []);
   });
 });

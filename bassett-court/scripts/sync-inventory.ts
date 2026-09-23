@@ -16,6 +16,7 @@
  *   npm run sync -- --dry-run       # report the diff without writing
  *   npm run sync -- --limit=25      # cap detail-page fetches (useful when testing)
  *   npm run sync -- --force         # bypass the shrink guard
+ *   npm run sync -- --probe         # report how well the source mapped, write nothing
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -25,9 +26,10 @@ import { fileURLToPath } from 'node:url';
 import { siteConfig } from '../site.config';
 import { getAdapter } from '../src/lib/sources/index';
 import { dedupe, normalizeVehicle } from '../src/lib/normalize';
+import { unmappedKeys } from '../src/lib/sources/feed';
 import { diffSnapshots } from '../src/lib/diff';
 import { buildDemoInventory } from '../src/lib/sources/demo';
-import type { InventorySnapshot, SyncLogEntry, Vehicle } from '../src/lib/types';
+import type { InventorySnapshot, RawVehicle, SyncLogEntry, Vehicle } from '../src/lib/types';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SNAPSHOT_PATH = resolve(projectRoot, 'data/inventory.json');
@@ -40,12 +42,14 @@ interface Args {
   force: boolean;
   limit: number;
   fallbackToDemo: boolean;
+  probe: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { dryRun: false, force: false, limit: 0, fallbackToDemo: false };
+  const args: Args = { dryRun: false, force: false, limit: 0, fallbackToDemo: false, probe: false };
   for (const token of argv) {
-    if (token === '--dry-run') args.dryRun = true;
+    if (token === '--probe') { args.probe = true; args.dryRun = true; }
+    else if (token === '--dry-run') args.dryRun = true;
     else if (token === '--force') args.force = true;
     else if (token === '--fallback-demo') args.fallbackToDemo = true;
     else if (token.startsWith('--source=')) args.source = token.slice('--source='.length);
@@ -95,6 +99,7 @@ async function main(): Promise<void> {
 
   let raw;
   let effectiveAdapter = adapterName;
+  let rawRows: Record<string, unknown>[] = [];
 
   try {
     raw = await getAdapter(adapterName).fetchAll({
@@ -103,6 +108,7 @@ async function main(): Promise<void> {
       limit: args.limit,
       politenessDelayMs: 250,
       log: (message) => log(`  ${message}`),
+      onRawRows: (rows) => { rawRows = rows; },
     });
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
@@ -135,18 +141,30 @@ async function main(): Promise<void> {
 
   // Shrink guard: a source that starts blocking us, or a markup change that
   // breaks parsing, should not be able to quietly empty the catalogue.
+  //
+  // It only guards publishing. A dry run or a probe writes nothing, so it
+  // reports what the guard would do and carries on — otherwise the one command
+  // you reach for when a source is misbehaving refuses to tell you anything.
   const floor = Math.floor(previousVehicles.length * siteConfig.inventory.minRetainedFraction);
-  if (!args.force && previousVehicles.length > 0 && normalized.length < floor) {
-    const note = `Refusing to publish ${normalized.length} vehicle(s); previous snapshot held ${previousVehicles.length} and the floor is ${floor}.`;
+  const wouldShrink = previousVehicles.length > 0 && normalized.length < floor;
+
+  if (wouldShrink && !args.force) {
+    const note = `${normalized.length} vehicle(s) is below the floor of ${floor} (previous snapshot held ${previousVehicles.length}).`;
+
+    if (!args.dryRun) {
+      log('');
+      log(`ABORTED: refusing to publish — ${note}`);
+      log('Re-run with --force if the drop is genuine (for example, a real inventory reduction).');
+      await appendLog({
+        at: now, adapter: effectiveAdapter, fetched: raw.length, published: previousVehicles.length,
+        added: [], removed: [], repriced: [], unchanged: previousVehicles.length, ok: false, note,
+      });
+      process.exitCode = 1;
+      return;
+    }
+
     log('');
-    log(`ABORTED: ${note}`);
-    log('Re-run with --force if the drop is genuine (for example, a real inventory reduction).');
-    await appendLog({
-      at: now, adapter: effectiveAdapter, fetched: raw.length, published: previousVehicles.length,
-      added: [], removed: [], repriced: [], unchanged: previousVehicles.length, ok: false, note,
-    });
-    process.exitCode = 1;
-    return;
+    log(`NOTE: a real sync would be rejected by the shrink guard — ${note}`);
   }
 
   const sorted = normalized.sort((a, b) => a.id.localeCompare(b.id));
@@ -158,9 +176,13 @@ async function main(): Promise<void> {
   log(`  repriced  : ${diff.repriced.length}`);
   log(`  unchanged : ${diff.unchanged}`);
 
+  if (args.probe) {
+    printProbe(raw, normalized, rawRows);
+  }
+
   if (args.dryRun) {
     log('');
-    log('Dry run — nothing written.');
+    log(args.probe ? 'Probe only — nothing written.' : 'Dry run — nothing written.');
     return;
   }
 
@@ -184,6 +206,92 @@ async function main(): Promise<void> {
 
   log('');
   log(`Wrote ${sorted.length} vehicle(s) to data/inventory.json in ${((Date.now() - startedAt) / 1000).toFixed(1)}s.`);
+}
+
+/**
+ * Field-mapping report.
+ *
+ * The point of this is to answer, in one run, whether a new provider's records
+ * are landing correctly — and when they are not, to name the exact source keys
+ * being dropped so the alias list can be extended rather than guessed at.
+ */
+function printProbe(
+  raw: RawVehicle[],
+  normalized: Vehicle[],
+  rawRows: Record<string, unknown>[],
+): void {
+  const FIELDS = [
+    'vin', 'stockNumber', 'condition', 'year', 'make', 'model', 'trim',
+    'bodyStyle', 'drivetrain', 'transmission', 'fuelType', 'engine',
+    'exteriorColor', 'interiorColor', 'mileage', 'price', 'msrp',
+    'images', 'features', 'description', 'sourceUrl',
+  ] as const;
+
+  log('');
+  log('─'.repeat(64));
+  log('FIELD MAPPING REPORT');
+  log('─'.repeat(64));
+
+  if (!raw.length) {
+    log('No records came back. Check the endpoint URL and the credential.');
+    return;
+  }
+
+  log('');
+  log(`  ${'field'.padEnd(16)} ${'filled'.padStart(12)}   example`);
+  for (const field of FIELDS) {
+    const filled = raw.filter((row) => {
+      const value = row[field] as unknown;
+      return Array.isArray(value) ? value.length > 0 : value != null && value !== '';
+    });
+    const pct = Math.round((filled.length / raw.length) * 100);
+    const first = filled.length ? (filled[0][field] as unknown) : null;
+    const sample = filled.length
+      ? String(Array.isArray(first) ? `${first.length} item(s)` : first).slice(0, 34)
+      : '—';
+    const bar = pct === 0 ? 'MISSING' : `${filled.length}/${raw.length} (${pct}%)`;
+    log(`  ${field.padEnd(16)} ${bar.padStart(12)}   ${sample}`);
+  }
+
+  // Keys the provider sends that we are currently discarding.
+  if (rawRows.length) {
+    const counts = new Map<string, number>();
+    for (const row of rawRows) {
+      for (const key of unmappedKeys(row)) counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    const ignored = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+
+    log('');
+    if (!ignored.length) {
+      log('  Every populated source field mapped to something. Nothing discarded.');
+    } else {
+      log(`  ${ignored.length} source field(s) not recognised and dropped:`);
+      for (const [key, count] of ignored.slice(0, 25)) {
+        const example = String(rawRows.find((r) => r[key] != null && r[key] !== '')?.[key] ?? '').slice(0, 40);
+        log(`    ${key.padEnd(28)} ${String(count).padStart(5)} record(s)   ${example}`);
+      }
+      if (ignored.length > 25) log(`    …and ${ignored.length - 25} more`);
+      log('');
+      log('  Add any of these worth keeping to FIELD_ALIASES in src/lib/sources/feed.ts.');
+    }
+  }
+
+  log('');
+  log(`  ${raw.length} fetched -> ${normalized.length} publishable`);
+  const unpriced = normalized.filter((v) => v.price == null).length;
+  if (unpriced) log(`  ${unpriced} would publish as "${siteConfig.pricing.callForPriceLabel}" (no usable source price)`);
+  const photoless = normalized.filter((v) => v.images.length === 0).length;
+  if (photoless) log(`  ${photoless} have no photography`);
+
+  if (normalized.length) {
+    const sample = normalized[0];
+    log('');
+    log('  Sample published vehicle:');
+    log(`    ${[sample.year, sample.make, sample.model, sample.trim].filter(Boolean).join(' ')}`);
+    log(`    source ${sample.sourcePrice ?? '—'} -> published ${sample.price ?? '—'} (+${(sample.markupRate * 100).toFixed(2)}%)`);
+    log(`    vin ${sample.vin ?? '—'}  ·  ${sample.images.length} photo(s)  ·  /inventory/${sample.slug}`);
+  }
+  log('─'.repeat(64));
 }
 
 main().catch((error) => {

@@ -41,6 +41,24 @@ function normalizeKey(key: string): string {
   return key.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+/** Every alias the mapper recognises, flattened for lookup. */
+const KNOWN_ALIASES = new Set(Object.values(FIELD_ALIASES).flat());
+
+/**
+ * Keys present in a source record that the mapper does not recognise.
+ *
+ * Used by `npm run sync -- --probe` to say plainly which fields a new provider
+ * is sending that we are throwing away, so the alias list can be extended
+ * instead of guessed at.
+ */
+export function unmappedKeys(row: Record<string, unknown>): string[] {
+  return Object.keys(row).filter((key) => {
+    const value = row[key];
+    if (value == null || value === '') return false;
+    return !KNOWN_ALIASES.has(normalizeKey(key));
+  });
+}
+
 /** Build a canonical record from a loosely-keyed source row. */
 export function mapRow(row: Record<string, unknown>): RawVehicle {
   const normalized = new Map<string, unknown>();
@@ -203,6 +221,7 @@ export const feedAdapter: SourceAdapter = {
 
     const rows = parseFeedBody(body);
     log(`feed contained ${rows.length} row(s)`);
+    options.onRawRows?.(rows);
     return rows.map(mapRow);
   },
 };

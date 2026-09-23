@@ -29,6 +29,7 @@ once the source is set up (see below).
 | `npm run build` / `npm start` | Production build and server |
 | `npm run sync` | Pull the live source and rewrite `data/inventory.json` |
 | `npm run sync:dry` | Show what a sync would change, write nothing |
+| `npm run sync:probe` | Field-mapping report for the configured source, write nothing |
 | `npm run sync:demo` | Fill the catalogue with sample vehicles |
 | `npm test` | Unit tests (68 of them, no network) |
 | `npm run typecheck` | TypeScript, no emit |
@@ -126,11 +127,18 @@ SHIFTLY_AUTH_STYLE=bearer               # bearer (default) | header | query
 Then confirm before publishing anything:
 
 ```bash
-npm run sync -- --source=shiftly --dry-run
+npm run sync:probe            # or: npm run sync -- --probe --source=shiftly
 ```
 
-That prints how many records came back and what the diff would be, without
-touching `data/inventory.json`.
+`--probe` writes nothing and prints a field-mapping report: how many records
+came back, what percentage of them populated each field, a sample value for
+each, and — importantly — **the source fields the mapper did not recognise and
+dropped**, with counts and examples. If something lands empty, that list
+usually says why, and the fix is adding the alias to `FIELD_ALIASES` in
+`src/lib/sources/feed.ts`.
+
+It finishes with a sample published vehicle showing the markup applied, so you
+can eyeball one price end to end before anything goes live.
 
 The adapter sends the credential as an `Authorization: Bearer` header by
 default. If Shiftly wants it somewhere else, set `SHIFTLY_AUTH_STYLE=header`
@@ -162,7 +170,10 @@ matches column names loosely, so most standard DMS exports work with no mapping.
 ### Safety valves
 
 - **Shrink guard.** If a run returns fewer than 50% of the vehicles in the
-  previous snapshot, it aborts and leaves the existing snapshot in place. A
+  previous snapshot, it aborts and leaves the existing snapshot in place. It
+  guards publishing only — `--dry-run` and `--probe` report that the guard
+  would have fired and then carry on, so the command you reach for when a
+  source is misbehaving still tells you what is wrong. A
   source that starts blocking you, or a markup change that breaks parsing,
   cannot quietly empty your catalogue. Override with `--force` when a large drop
   is genuine. Tune via `inventory.minRetainedFraction`.
@@ -175,6 +186,7 @@ matches column names loosely, so most standard DMS exports work with no mapping.
 
 ```bash
 npm run sync -- --dry-run        # report the diff, write nothing
+npm run sync -- --probe          # field-mapping report, write nothing
 npm run sync -- --limit=25       # cap detail-page fetches while testing
 npm run sync -- --source=feed    # override the configured adapter
 npm run sync -- --force          # bypass the shrink guard
