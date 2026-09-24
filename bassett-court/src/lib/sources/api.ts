@@ -38,21 +38,39 @@ export interface ApiSourceConfig {
 /** Keys an API commonly uses to point at the next page. */
 const NEXT_KEYS = ['next', 'next_page', 'nextPage', 'nextUrl', 'next_url', 'nextCursor', 'next_cursor'];
 
+/**
+ * Append a query parameter without disturbing the rest of the query string.
+ *
+ * URLSearchParams round-tripping normalizes a valueless parameter — `&555`
+ * becomes `&555=` — and some endpoints care. Shiftly's inventory URL carries
+ * exactly such a parameter, so the query is edited as text and left otherwise
+ * byte-identical to what the provider gave us.
+ */
+function appendParam(url: string, key: string, value: string): string {
+  const [base, hash = ''] = url.split('#');
+  const pattern = new RegExp(`[?&]${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=`);
+  if (pattern.test(base)) return url; // already present — leave the caller's value alone
+  const separator = base.includes('?') ? '&' : '?';
+  const suffix = hash ? `#${hash}` : '';
+  return `${base}${separator}${key}=${encodeURIComponent(value)}${suffix}`;
+}
+
 function buildUrl(config: ApiSourceConfig, page: number): string {
-  const url = new URL(config.url);
+  let url = config.url;
+
   for (const [key, value] of Object.entries(config.params ?? {})) {
-    url.searchParams.set(key, value);
+    url = appendParam(url, key, value);
   }
   if (config.apiKey && config.authStyle === 'query') {
-    url.searchParams.set(config.queryParam ?? 'api_key', config.apiKey);
+    url = appendParam(url, config.queryParam ?? 'api_key', config.apiKey);
   }
   if (page > 1) {
-    url.searchParams.set(config.pageParam ?? 'page', String(page));
+    url = appendParam(url, config.pageParam ?? 'page', String(page));
   }
   if (config.pageSize) {
-    url.searchParams.set('limit', String(config.pageSize));
+    url = appendParam(url, 'limit', String(config.pageSize));
   }
-  return url.toString();
+  return url;
 }
 
 function authHeaders(config: ApiSourceConfig): Record<string, string> {
@@ -101,6 +119,9 @@ export async function fetchApiInventory(
       body = await fetchText(nextUrl, {
         accept: 'application/json,text/csv,application/xml;q=0.9,*/*;q=0.8',
         headers: authHeaders(config),
+        // Full-catalogue exports run to several megabytes; the default 20s is
+        // comfortable on a warm connection and tight on a cold CI runner.
+        timeoutMs: 90_000,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

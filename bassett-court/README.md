@@ -113,16 +113,32 @@ Set `INVENTORY_SOURCE_ADAPTER`, or `inventory.adapter` in `site.config.ts`.
 
 ### Shiftly
 
-Shiftly does not publish API documentation, so the request shape is configured
-rather than hard-coded. Point it at the endpoint and it handles auth,
-pagination and field mapping:
+Shiftly exposes the catalogue as a single CSV export, authenticated by a query
+parameter:
+
+```
+GET https://<host>/get-csv-file?api_key=<key>&555
+```
+
+It returns the whole inventory in one response (around 6 MB), so there is
+nothing to paginate. Configure it with:
 
 ```bash
 INVENTORY_SOURCE_ADAPTER=shiftly
-SHIFTLY_API_URL="https://…/inventory"   # the endpoint
-SHIFTLY_API_KEY="…"                     # secret — never commit this
-SHIFTLY_AUTH_STYLE=bearer               # bearer (default) | header | query
+SHIFTLY_API_URL="https://<host>/get-csv-file?555"
+SHIFTLY_API_KEY="…"          # secret — never commit this
+SHIFTLY_AUTH_STYLE=query
+SHIFTLY_AUTH_PARAM=api_key
 ```
+
+Paste the **full** request URL copied from the browser. Fixed parameters
+already on it are preserved byte-for-byte — including a valueless one like
+`&555`, which URLSearchParams would otherwise rewrite to `&555=`. The key is
+added only if the URL does not already carry one.
+
+To find the URL again: open the Shiftly side panel, right-click inside it →
+Inspect → Network → click **Load Vehicles** → right-click the `get-csv-file`
+request → Copy → Copy link address.
 
 Then confirm before publishing anything:
 
@@ -140,17 +156,15 @@ usually says why, and the fix is adding the alias to `FIELD_ALIASES` in
 It finishes with a sample published vehicle showing the markup applied, so you
 can eyeball one price end to end before anything goes live.
 
-The adapter sends the credential as an `Authorization: Bearer` header by
-default. If Shiftly wants it somewhere else, set `SHIFTLY_AUTH_STYLE=header`
-with `SHIFTLY_AUTH_HEADER`, or `SHIFTLY_AUTH_STYLE=query` with
-`SHIFTLY_AUTH_PARAM`. Field names are matched loosely, so most JSON shapes map
-without any further work — `vin`/`VIN Number`/`vehicleIdentificationNumber` all
-land in the same place, and so on for price, mileage, photos and the rest.
+Column names are matched loosely, so a CSV header of `VIN Number`,
+`Manufacturer`, `Model Name`, `Selling Price`, `Odometer Reading` and
+`Photo URLs` maps without any further work — as do the dozen other spellings
+each of those fields turns up under.
 
-Pagination follows an explicit `next` / `next_page` / `nextCursor` when the API
-returns one, and otherwise pages numerically. It stops on a repeated URL or a
-page identical to the one before it, so an API that ignores the page parameter
-cannot duplicate the catalogue.
+The same adapter also handles paginated JSON APIs: it follows an explicit
+`next` / `next_page` / `nextCursor` cursor when one is returned, and otherwise
+pages numerically, stopping on a repeated URL or a page identical to the one
+before it.
 
 **The key is a secret.** It belongs in `.env.local` locally (git-ignored) and in
 a GitHub Actions secret in CI — not in the repository, a screenshot, or a chat
@@ -207,9 +221,10 @@ Configure in **Settings → Secrets and variables → Actions**:
 | Name | Kind | Purpose |
 | --- | --- | --- |
 | `INVENTORY_SOURCE_ADAPTER` | Variable | `shiftly`, `feed`, `sitemap-jsonld` or `demo` |
-| `SHIFTLY_API_URL` | Variable | The Shiftly inventory endpoint |
+| `SHIFTLY_API_URL` | Variable | The `get-csv-file` endpoint, with any fixed parameters |
 | `SHIFTLY_API_KEY` | **Secret** | The Shiftly credential |
-| `SHIFTLY_AUTH_STYLE` | Variable | `bearer` (default), `header` or `query` |
+| `SHIFTLY_AUTH_STYLE` | Variable | `query` for Shiftly; `bearer` or `header` also supported |
+| `SHIFTLY_AUTH_PARAM` | Variable | `api_key` for Shiftly |
 | `SHIFTLY_DEALER_ID` | Variable | Optional, sent as `dealer_id` |
 | `INVENTORY_SOURCE_URL` | Variable | Dealer site, for the crawl adapter |
 | `INVENTORY_FEED_URL` | Secret | Feed URL, for the `feed` adapter |

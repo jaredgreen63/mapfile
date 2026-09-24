@@ -186,3 +186,49 @@ describe('fetchText auth handling', () => {
     restore();
   });
 });
+
+describe('query-string handling', () => {
+  it('preserves a valueless parameter instead of normalizing it', async () => {
+    // Shiftly's inventory URL carries a bare "&555". Round-tripping the URL
+    // through URLSearchParams would rewrite it as "&555=", and an endpoint is
+    // entitled to care about the difference.
+    const { calls, restore } = stub(() => ({ body: 'vin,make\nabc,Chevrolet' }));
+    after(restore);
+    await fetchApiInventory(
+      { name: 'shiftly', url: 'https://api.example.com/get-csv-file?555', apiKey: KEY, authStyle: 'query', queryParam: 'api_key' },
+      silent,
+    );
+    assert.ok(calls[0].url.includes('555'), calls[0].url);
+    assert.ok(!calls[0].url.includes('555='), `bare parameter was rewritten: ${calls[0].url}`);
+    assert.ok(calls[0].url.includes(`api_key=${KEY}`));
+    restore();
+  });
+
+  it('does not add the key twice when the URL already carries one', async () => {
+    const { calls, restore } = stub(() => ({ body: 'vin,make\nabc,Chevrolet' }));
+    after(restore);
+    await fetchApiInventory(
+      { name: 'shiftly', url: 'https://api.example.com/get-csv-file?api_key=PASTED&555', apiKey: KEY, authStyle: 'query', queryParam: 'api_key' },
+      silent,
+    );
+    const occurrences = calls[0].url.split('api_key=').length - 1;
+    assert.equal(occurrences, 1, `api_key appeared ${occurrences} times: ${calls[0].url}`);
+    restore();
+  });
+
+  it('reads a CSV export as a single page, with no pagination', async () => {
+    const rows = ['vin,make,model,price'];
+    for (let i = 0; i < 400; i += 1) rows.push(`VIN${i},Chevrolet,Tahoe,${50000 + i}`);
+    const { calls, restore } = stub(() => ({ body: rows.join('\n') }));
+    after(restore);
+    const parsed = await fetchApiInventory(
+      { name: 'shiftly', url: 'https://api.example.com/get-csv-file', apiKey: KEY, authStyle: 'query', maxPages: 1 },
+      silent,
+    );
+    assert.equal(calls.length, 1, 'a single CSV export must not be paginated');
+    assert.equal(parsed.length, 400);
+    assert.equal(parsed[0].make, 'Chevrolet');
+    assert.equal(parsed[399].price, '50399');
+    restore();
+  });
+});
