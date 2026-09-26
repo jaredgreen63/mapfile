@@ -1,19 +1,25 @@
 name: Sync inventory
 
 # This workflow is what makes the catalogue self-maintaining. It re-reads the
-# upstream source on a schedule, rewrites data/inventory.json, and commits the
+# upstream source once a day, rewrites data/inventory.json, and commits the
 # result. Because the snapshot is a full replacement, a vehicle added upstream
 # appears on the next run and a vehicle withdrawn upstream disappears — no
 # manual listing management at either end.
+#
+# Need it sooner than tomorrow? Actions tab -> Sync inventory -> Run workflow.
 #
 # Pushing the commit is what triggers a redeploy on Vercel, Netlify, Cloudflare
 # Pages or any host wired to this branch.
 
 on:
   schedule:
-    # Every three hours. Dealer inventory does not move faster than that, and a
-    # gentler cadence keeps us a good citizen of the upstream site.
-    - cron: '17 */3 * * *'
+    # Once a day, 13:00 UTC — 9am Eastern in summer, 8am in winter.
+    #
+    # Shiftly regenerates the export in the early morning Eastern (the copy
+    # observed while wiring this up carried Last-Modified 11:42 UTC), so this
+    # lands after the new file is ready and before the day's first customers
+    # are browsing.
+    - cron: '0 13 * * *'
   workflow_dispatch:
     inputs:
       adapter:

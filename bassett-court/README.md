@@ -245,8 +245,9 @@ npm run sync -- --fallback-demo  # fall back to sample data if the source is dow
 ## Automating it
 
 [`.github/workflows/sync-inventory.yml`](../.github/workflows/sync-inventory.yml)
-runs the sync every three hours, verifies the site still builds with the new
-data, and commits `data/` if anything changed. The commit is what triggers a
+runs the sync once a day at 13:00 UTC (9am Eastern in summer, 8am in winter),
+verifies the site still builds with the new data, and commits `data/` if
+anything changed. The commit is what triggers a
 redeploy on any host wired to this branch.
 
 Configure in **Settings → Secrets and variables → Actions**:
@@ -268,9 +269,11 @@ whether to bypass the shrink guard. The workflow rebases and retries if a
 scheduled run collides with a human push, and writes a summary of every run
 (added / removed / repriced) to the job page.
 
-To change the cadence, edit the `cron` line. Every three hours is a deliberate
-choice: dealer inventory does not move faster than that, and a gentler schedule
-keeps you a good citizen of the upstream site.
+To change the cadence, edit the `cron` line. The daily timing is chosen to land
+after Shiftly regenerates its export, which it does in the early morning
+Eastern. Needing it sooner than tomorrow is what **Run workflow** is for —
+Actions tab, *Sync inventory*, *Run workflow* — and that also lets you pick a
+different adapter or bypass the shrink guard for one run.
 
 ---
 
