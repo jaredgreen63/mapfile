@@ -67,7 +67,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: Vehicle; p
 
         {/* Every vehicle sits on the same lot; say so on the card rather than
             making the buyer open the listing to find out. */}
-        <LocationNote variant="line" />
+        <LocationNote variant="line" vehicle={vehicle} />
 
         <Link
           href={`/appointment?vehicle=${encodeURIComponent(vehicle.id)}`}

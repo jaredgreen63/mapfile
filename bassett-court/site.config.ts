@@ -90,13 +90,17 @@ export const siteConfig = {
 
   pricing: {
     /**
-     * Markup applied to every sourced vehicle price.
-     * 0.03 === +3%.
+     * Markup applied to every sourced vehicle price. 0 publishes the source
+     * price unchanged; 0.03 would add 3%.
      */
-    markupRate: 0.03,
+    markupRate: 0,
 
-    /** How the marked-up figure is rounded for display. */
-    rounding: 'nearest-25' as PriceRounding,
+    /**
+     * How the published figure is rounded. With no markup, 'none' passes the
+     * source price straight through — rounding it would move a price nobody
+     * asked to move.
+     */
+    rounding: 'none' as PriceRounding,
 
     /**
      * Vehicles arriving without a usable price are published as
@@ -105,9 +109,9 @@ export const siteConfig = {
     callForPriceLabel: 'Call for Price',
 
     /**
-     * Keep the upstream figure in the data file for reconciliation, but never
-     * render it in the public UI. Flip to true only if you have a reason to
-     * show a comparison price and a basis for the claim.
+     * Keep the upstream figure in the data file for reconciliation. With no
+     * markup it is identical to the published price, so there is nothing to
+     * compare and nothing to show.
      */
     showSourcePrice: false,
 
@@ -140,6 +144,14 @@ export const siteConfig = {
 
     /** Listings per page on the inventory grid. */
     pageSize: 24,
+
+    /**
+     * A feed may flag a sold vehicle as unavailable rather than dropping it
+     * from the export. Those are never published — that is what takes a sold
+     * car off the site. Vehicles marked "pending" are still shown by default,
+     * since a pending sale often falls through; set this false to hide them.
+     */
+    publishPending: true,
 
     /**
      * Shown on listing and detail pages. Required if the vehicles are held by

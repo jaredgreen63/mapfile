@@ -53,11 +53,13 @@ describe('normalizeVehicle', () => {
     assert.equal(normalizeVehicle({}, NOW), null);
   });
 
-  it('marks the price up and keeps the source figure for reconciliation', () => {
+  it('publishes the source price unchanged while no markup is configured', () => {
+    // The markup machinery is still in place and covered in pricing.test.ts;
+    // the site is simply configured at 0% today.
     const vehicle = build({ price: '$40,000' });
     assert.equal(vehicle.sourcePrice, 40_000);
-    assert.equal(vehicle.price, 41_200); // 40,000 * 1.03, already on a 25 boundary
-    assert.equal(vehicle.markupRate, 0.03);
+    assert.equal(vehicle.price, 40_000);
+    assert.equal(vehicle.markupRate, 0);
   });
 
   it('carries an unpriced vehicle through without a price', () => {

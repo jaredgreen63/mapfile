@@ -21,6 +21,21 @@ export interface Vehicle {
   doors: number | null;
   mileage: number | null;
 
+  /** available | pending | unavailable. Only "available" is published. */
+  availability: 'available' | 'pending' | 'unavailable' | null;
+
+  /**
+   * Where this particular vehicle sits. A multi-rooftop feed carries a
+   * different address per row, so this is read from the record rather than
+   * assumed from config; config supplies the fallback.
+   */
+  dealer: {
+    name: string | null;
+    address: string | null;
+    phone: string | null;
+    id: string | null;
+  } | null;
+
   /** Upstream asking price in USD, before markup. Null means "no price given". */
   sourcePrice: number | null;
   /** Upstream MSRP when published separately from the asking price. */
@@ -90,12 +105,19 @@ export interface RawVehicle {
   interiorColor?: string | null;
   doors?: number | string | null;
   mileage?: number | string | null;
+  mileageUnit?: string | null;
   price?: number | string | null;
   msrp?: number | string | null;
   images?: string[] | null;
   features?: string[] | null;
   description?: string | null;
   sourceUrl?: string | null;
+  availability?: string | null;
+  dealerId?: string | null;
+  dealerName?: string | null;
+  dealerPhone?: string | null;
+  dealerAddress?: string | null;
+  dateFirstOnLot?: string | null;
 }
 
 export interface SourceAdapter {

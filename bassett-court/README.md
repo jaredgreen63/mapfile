@@ -69,12 +69,17 @@ Everything lives in [`site.config.ts`](./site.config.ts):
 
 ```ts
 pricing: {
-  markupRate: 0.03,          // +3%
-  rounding: 'nearest-25',    // none | nearest-5 | nearest-25 | nearest-100 | dealer-95
+  markupRate: 0,       // publish the source price unchanged
+  rounding: 'none',    // none | nearest-5 | nearest-25 | nearest-100 | dealer-95
   showSourcePrice: false,
   disclaimer: 'Price excludes tax, title, license…',
 }
 ```
+
+**Prices are published exactly as the source reports them.** The markup
+machinery is still there and tested — set `markupRate` to `0.03` for 3% and
+pick a `rounding` mode — but it is switched off, so what the lot lists is what
+the site shows.
 
 Two behaviours worth knowing:
 
@@ -85,8 +90,10 @@ Two behaviours worth knowing:
   reconciliation, but is not rendered publicly unless you set
   `showSourcePrice: true`.
 
-`rounding: 'dealer-95'` gives classic `$xx,995` endings; `nearest-25` (the
-default) gives a clean figure without pretending to be a sticker price.
+If you ever do turn a markup on, `rounding: 'dealer-95'` gives classic
+`$xx,995` endings and `nearest-25` gives a clean figure without pretending to
+be a sticker price. At 0% leave it on `none`, since rounding would move a price
+nobody asked to move.
 
 ---
 
@@ -117,15 +124,18 @@ Shiftly exposes the catalogue as a single CSV export, authenticated by a query
 parameter:
 
 ```
-GET https://<host>/get-csv-file?api_key=<key>&555
+GET https://sag.gemquery.com/api/v1/get-csv-file?api_key=<key>&466
 ```
+
+(The backend is `sag.gemquery.com`, not a shiftlyauto.com address. The trailing
+number is the dealer account.)
 
 It returns the whole inventory in one response (around 6 MB), so there is
 nothing to paginate. Configure it with:
 
 ```bash
 INVENTORY_SOURCE_ADAPTER=shiftly
-SHIFTLY_API_URL="https://<host>/get-csv-file?555"
+SHIFTLY_API_URL="https://sag.gemquery.com/api/v1/get-csv-file?466"
 SHIFTLY_API_KEY="…"          # secret — never commit this
 SHIFTLY_AUTH_STYLE=query
 SHIFTLY_AUTH_PARAM=api_key
@@ -156,10 +166,28 @@ usually says why, and the fix is adding the alias to `FIELD_ALIASES` in
 It finishes with a sample published vehicle showing the markup applied, so you
 can eyeball one price end to end before anything goes live.
 
-Column names are matched loosely, so a CSV header of `VIN Number`,
-`Manufacturer`, `Model Name`, `Selling Price`, `Odometer Reading` and
-`Photo URLs` maps without any further work — as do the dozen other spellings
-each of those fields turns up under.
+#### The export's format
+
+Shiftly emits Facebook's vehicle-catalogue columns, which contain two traps
+worth knowing about. Both are covered by tests pinned to the real header:
+
+- **`State of Vehicle`** carries NEW / USED / CPO — that is the condition.
+  **`vehicle_type`** carries `car_truck`, `boat` and so on, which is a body
+  class, *not* a condition. Mapping the second onto condition mislabels every
+  listing, and does it silently.
+- **`Mileage Value`** is paired with **`Mileage Unit`**. A kilometre reading
+  rendered as miles overstates the odometer by about 60%, so the unit is
+  honoured and km are converted.
+
+`Availability` decides whether a vehicle is published at all — see below.
+`Address`, `dealer_name` and `dealer_phone` are read per row, so a feed
+covering more than one rooftop shows each vehicle at its own location rather
+than all of them at the configured default. `date_first_on_lot` becomes the
+vehicle's "first seen" date, which is what the *Recently Added* sort uses.
+
+Everything else maps by loose name matching, so `VIN Number`, `Manufacturer`,
+`Selling Price`, `Odometer Reading` and the dozen other spellings each field
+turns up under all land correctly without configuration.
 
 The same adapter also handles paginated JSON APIs: it follows an explicit
 `next` / `next_page` / `nextCursor` cursor when one is returned, and otherwise
@@ -191,6 +219,11 @@ matches column names loosely, so most standard DMS exports work with no mapping.
   source that starts blocking you, or a markup change that breaks parsing,
   cannot quietly empty your catalogue. Override with `--force` when a large drop
   is genuine. Tune via `inventory.minRetainedFraction`.
+- **Sold vehicles are withheld.** A feed may flag a vehicle as
+  `not_available` rather than dropping the row. Those never reach the snapshot,
+  so a sold car leaves the site exactly as a removed one would. Vehicles marked
+  `pending` are still shown by default, since pending sales fall through; set
+  `inventory.publishPending: false` to hide them too.
 - **Failure is non-destructive.** If the source is unreachable the sync exits
   non-zero and writes nothing, so the site keeps serving its last good data.
 - **Audit trail.** Every run appends to `data/sync-log.json`: what was added,
@@ -309,8 +342,10 @@ privacy pages · dark by default with a light toggle and no flash on load ·
 markup on every listing for vehicle rich results · skip link, focus rings,
 labelled controls and reduced-motion support throughout.
 
-Every listing states that the vehicle is at **Escude Chevrolet of Easley,
-5010 Old Easley Bridge Rd, Easley, SC 29642**, with a directions link.
+Every listing states where the vehicle physically is, with a directions link —
+taken from the feed's own per-vehicle address where it has one, and falling
+back to **Escude Chevrolet of Easley, 5010 Old Easley Bridge Rd, Easley, SC
+29642** otherwise.
 
 Listings without photography render a body-style silhouette tinted from the
 vehicle's own exterior colour, so the grid looks deliberate before real photos

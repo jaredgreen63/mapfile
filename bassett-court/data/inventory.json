@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-21T19:34:32.838Z",
+  "generatedAt": "2026-09-26T12:18:24.775Z",
   "sourceUrl": "https://www.escudechevrolet.com/",
   "sourceName": "Escude Chevrolet",
   "adapter": "demo",
-  "markupRate": 0.03,
+  "markupRate": 0,
   "vehicleCount": 54,
   "vehicles": [
     {
@@ -24,10 +24,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 15400,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 35420,
       "sourceMsrp": null,
-      "price": 36475,
-      "markupRate": 0.03,
+      "price": 35420,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Head-Up Display",
@@ -42,7 +44,7 @@
       "sourceUrl": null,
       "slug": "2025-jeep-wrangler-willys-zz0tuw",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "0ZP6NRCR26GUXVGYA",
@@ -62,10 +64,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 46900,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 14290,
       "sourceMsrp": null,
-      "price": 14725,
-      "markupRate": 0.03,
+      "price": 14290,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Lane Keep Assist",
@@ -78,7 +82,7 @@
       "sourceUrl": null,
       "slug": "2021-chevrolet-malibu-rs-uxvgya",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "10K1LKXKYESAZKJZP",
@@ -98,10 +102,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 31500,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 19230,
       "sourceMsrp": null,
-      "price": 19800,
-      "markupRate": 0.03,
+      "price": 19230,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Wireless Charging",
@@ -114,7 +120,7 @@
       "sourceUrl": null,
       "slug": "2024-honda-civic-sport-azkjzp",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "3L69E0B670VB0AN2P",
@@ -134,10 +140,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 10,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 30235,
       "sourceMsrp": 30235,
-      "price": 31150,
-      "markupRate": 0.03,
+      "price": 30235,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Blind Spot Monitoring",
@@ -154,7 +162,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-trailblazer-ls-b0an2p",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "3L6AA9TEH4XV65MKH",
@@ -174,10 +182,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 16,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 46940,
       "sourceMsrp": 46940,
-      "price": 48350,
-      "markupRate": 0.03,
+      "price": 46940,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Rear Park Assist",
@@ -193,7 +203,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-blazer-ev-rs-v65mkh",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "43EA71NJEGSWMMC1B",
@@ -213,10 +223,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 27400,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 30585,
       "sourceMsrp": null,
-      "price": 31500,
-      "markupRate": 0.03,
+      "price": 30585,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Remote Start",
@@ -228,7 +240,7 @@
       "sourceUrl": null,
       "slug": "2023-gmc-sierra-1500-sle-wmmc1b",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "4K6A1WPXD3WLM4F8X",
@@ -248,10 +260,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 41600,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 28470,
       "sourceMsrp": null,
-      "price": 29325,
-      "markupRate": 0.03,
+      "price": 28470,
+      "markupRate": 0,
       "images": [],
       "features": [
         "360-Degree Camera",
@@ -265,7 +279,7 @@
       "sourceUrl": null,
       "slug": "2023-ford-f-150-stx-lm4f8x",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "5GTLHHJWAXGPZZ46J",
@@ -285,10 +299,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 13,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 68395,
       "sourceMsrp": 68395,
-      "price": 70450,
-      "markupRate": 0.03,
+      "price": 68395,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Remote Start",
@@ -304,7 +320,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-tahoe-premier-pzz46j",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "6K5HDVGTV49NFAK95",
@@ -324,10 +340,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 55800,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 33960,
       "sourceMsrp": null,
-      "price": 34975,
-      "markupRate": 0.03,
+      "price": 33960,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Rear Park Assist",
@@ -339,7 +357,7 @@
       "sourceUrl": null,
       "slug": "2021-toyota-tacoma-sr5-nfak95",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "6UVUGS2N473AXXAYN",
@@ -359,10 +377,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 6,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 39555,
       "sourceMsrp": 39555,
-      "price": 40750,
-      "markupRate": 0.03,
+      "price": 39555,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Steering Wheel",
@@ -376,7 +396,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-equinox-ev-rs-axxayn",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "9DNHYATXHXEA6HHX8",
@@ -396,10 +416,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 28400,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 40065,
       "sourceMsrp": null,
-      "price": 41275,
-      "markupRate": 0.03,
+      "price": 40065,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Steering Wheel",
@@ -411,7 +433,7 @@
       "sourceUrl": null,
       "slug": "2024-ford-f-150-stx-a6hhx8",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "A0DLPUUPZ5BYF20HX",
@@ -431,10 +453,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 59100,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 30615,
       "sourceMsrp": null,
-      "price": 31525,
-      "markupRate": 0.03,
+      "price": 30615,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Bose Premium Audio",
@@ -449,7 +473,7 @@
       "sourceUrl": null,
       "slug": "2021-jeep-grand-cherokee-altitude-yf20hx",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "AR8SEFUJC5VAEY6N0",
@@ -469,10 +493,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 95800,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 21405,
       "sourceMsrp": null,
-      "price": 22050,
-      "markupRate": 0.03,
+      "price": 21405,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Front Seats",
@@ -488,7 +514,7 @@
       "sourceUrl": null,
       "slug": "2020-nissan-altima-sv-aey6n0",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "BEJ8VDJ12KY8HEPE2",
@@ -508,10 +534,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 20,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 41695,
       "sourceMsrp": 41695,
-      "price": 42950,
-      "markupRate": 0.03,
+      "price": 41695,
+      "markupRate": 0,
       "images": [],
       "features": [
         "360-Degree Camera",
@@ -525,7 +553,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-silverado-1500-ltz-8hepe2",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "CU2LDE296YHCC19M5",
@@ -545,10 +573,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 4,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 53245,
       "sourceMsrp": 53245,
-      "price": 54850,
-      "markupRate": 0.03,
+      "price": 53245,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Apple CarPlay",
@@ -562,7 +592,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-silverado-2500hd-wt-cc19m5",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "D048J8VK739KJNCWP",
@@ -582,10 +612,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 52500,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 28450,
       "sourceMsrp": null,
-      "price": 29300,
-      "markupRate": 0.03,
+      "price": 28450,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Wireless Charging",
@@ -600,7 +632,7 @@
       "sourceUrl": null,
       "slug": "2022-toyota-rav4-xle-kjncwp",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "DPX9YXAN8NF74HRB0",
@@ -620,10 +652,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 7,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 47000,
       "sourceMsrp": 47000,
-      "price": 48400,
-      "markupRate": 0.03,
+      "price": 47000,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Steering Wheel",
@@ -637,7 +671,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-traverse-lt-74hrb0",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "E79LYZMP5SJ9384TH",
@@ -657,10 +691,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 3,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 29345,
       "sourceMsrp": 29345,
-      "price": 30225,
-      "markupRate": 0.03,
+      "price": 29345,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Lane Keep Assist",
@@ -674,7 +710,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-trailblazer-lt-9384th",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "E8EAABMRYXFTC4ZFV",
@@ -694,10 +730,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 41800,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 36250,
       "sourceMsrp": null,
-      "price": 37350,
-      "markupRate": 0.03,
+      "price": 36250,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Rear Cross Traffic Alert",
@@ -711,7 +749,7 @@
       "sourceUrl": null,
       "slug": "2022-jeep-wrangler-willys-tc4zfv",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "FKPX03CZCJ6EEWXV3",
@@ -731,10 +769,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 17,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 39625,
       "sourceMsrp": 39625,
-      "price": 40825,
-      "markupRate": 0.03,
+      "price": 39625,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Lane Keep Assist",
@@ -750,7 +790,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-blazer-lt-eewxv3",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "FZJ7154X30VYK9M3V",
@@ -770,10 +810,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 16,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 40890,
       "sourceMsrp": 40890,
-      "price": 42125,
-      "markupRate": 0.03,
+      "price": 40890,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Front Seats",
@@ -786,7 +828,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-traverse-ls-yk9m3v",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "G2LG35PKGWVDPJDNM",
@@ -806,10 +848,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 0,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 42635,
       "sourceMsrp": 42635,
-      "price": 43925,
-      "markupRate": 0.03,
+      "price": 42635,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Adaptive Cruise Control",
@@ -826,7 +870,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-silverado-1500-high-country-dpjdnm",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "HK1191UN3H3KGLJXF",
@@ -846,10 +890,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 19,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 33445,
       "sourceMsrp": 33445,
-      "price": 34450,
-      "markupRate": 0.03,
+      "price": 33445,
+      "markupRate": 0,
       "images": [],
       "features": [
         "360-Degree Camera",
@@ -864,7 +910,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-colorado-z71-kgljxf",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "HWN7BH2ED5LFBUVDZ",
@@ -884,10 +930,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 9,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 68095,
       "sourceMsrp": 68095,
-      "price": 70150,
-      "markupRate": 0.03,
+      "price": 68095,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Rear Park Assist",
@@ -904,7 +952,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-suburban-lt-fbuvdz",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "JCY8JXEK687MKU8BP",
@@ -924,10 +972,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 22,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 63440,
       "sourceMsrp": 63440,
-      "price": 65350,
-      "markupRate": 0.03,
+      "price": 63440,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Rear Park Assist",
@@ -941,7 +991,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-silverado-2500hd-ltz-mku8bp",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "JHUU3MRT6GG8C9B51",
@@ -961,10 +1011,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 31300,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 17155,
       "sourceMsrp": null,
-      "price": 17675,
-      "markupRate": 0.03,
+      "price": 17155,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Android Auto",
@@ -976,7 +1028,7 @@
       "sourceUrl": null,
       "slug": "2023-nissan-altima-s-8c9b51",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "JRWVJL0WR03C5HM88",
@@ -996,10 +1048,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 4,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 51235,
       "sourceMsrp": 51235,
-      "price": 52775,
-      "markupRate": 0.03,
+      "price": 51235,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Remote Start",
@@ -1014,7 +1068,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-traverse-ls-c5hm88",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "LLAZVJYXHRFF5CND8",
@@ -1034,10 +1088,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 15,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 60910,
       "sourceMsrp": 60910,
-      "price": 62725,
-      "markupRate": 0.03,
+      "price": 60910,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Panoramic Sunroof",
@@ -1055,7 +1111,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-tahoe-lt-f5cnd8",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "M3V0SY1E8B7591LNE",
@@ -1075,10 +1131,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 12,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 46290,
       "sourceMsrp": 46290,
-      "price": 47675,
-      "markupRate": 0.03,
+      "price": 46290,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Rear Park Assist",
@@ -1093,7 +1151,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-blazer-rs-591lne",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "M3ZFVKKL4E08DTCC3",
@@ -1113,10 +1171,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 9,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 56665,
       "sourceMsrp": 56665,
-      "price": 58375,
-      "markupRate": 0.03,
+      "price": 56665,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Navigation System",
@@ -1129,7 +1189,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-blazer-ev-lt-8dtcc3",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "MSX3MF9R4KUJ7HRZ1",
@@ -1149,10 +1209,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 16600,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 34120,
       "sourceMsrp": null,
-      "price": 35150,
-      "markupRate": 0.03,
+      "price": 34120,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Navigation System",
@@ -1166,7 +1228,7 @@
       "sourceUrl": null,
       "slug": "2025-toyota-rav4-le-j7hrz1",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "ND26NP9GV5AUEU77B",
@@ -1186,10 +1248,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 14,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 44425,
       "sourceMsrp": 44425,
-      "price": 45750,
-      "markupRate": 0.03,
+      "price": 44425,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Panoramic Sunroof",
@@ -1204,7 +1268,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-colorado-lt-ueu77b",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "NJG5EREHV9CZ9H18P",
@@ -1224,10 +1288,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 18,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 57320,
       "sourceMsrp": 57320,
-      "price": 59050,
-      "markupRate": 0.03,
+      "price": 57320,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Leather Upholstery",
@@ -1245,7 +1311,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-blazer-ev-lt-z9h18p",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "NMAK6N5WJXRWD22R0",
@@ -1265,10 +1331,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 7,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": null,
       "sourceMsrp": 39195,
       "price": null,
-      "markupRate": 0.03,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Sunroof",
@@ -1284,7 +1352,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-equinox-ev-lt-wd22r0",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "PS7SPNKCKNPV55PE1",
@@ -1304,10 +1372,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 11,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 42740,
       "sourceMsrp": 42740,
-      "price": 44025,
-      "markupRate": 0.03,
+      "price": 42740,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Third-Row Seating",
@@ -1324,7 +1394,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-blazer-lt-v55pe1",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "RE1GEEFEE4RYXPVVM",
@@ -1344,10 +1414,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 5,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 45745,
       "sourceMsrp": 45745,
-      "price": 47125,
-      "markupRate": 0.03,
+      "price": 45745,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Head-Up Display",
@@ -1360,7 +1432,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-blazer-rs-yxpvvm",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "RK1ASDA8LE8SVWNC2",
@@ -1380,10 +1452,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 4,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": null,
       "sourceMsrp": 24400,
       "price": null,
-      "markupRate": 0.03,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Third-Row Seating",
@@ -1398,7 +1472,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-trax-1rs-svwnc2",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "RM2TU33BUMTT1F1FM",
@@ -1418,10 +1492,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 18,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 68410,
       "sourceMsrp": 68410,
-      "price": 70450,
-      "markupRate": 0.03,
+      "price": 68410,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Wireless Charging",
@@ -1434,7 +1510,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-suburban-rst-t1f1fm",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "RUYDK5AB02988482U",
@@ -1454,10 +1530,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 1,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 46770,
       "sourceMsrp": 46770,
-      "price": 48175,
-      "markupRate": 0.03,
+      "price": 46770,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Panoramic Sunroof",
@@ -1470,7 +1548,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-blazer-ev-lt-88482u",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "RV3KL9PE22RS0MULK",
@@ -1490,10 +1568,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 15,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 46010,
       "sourceMsrp": 46010,
-      "price": 47400,
-      "markupRate": 0.03,
+      "price": 46010,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Navigation System",
@@ -1507,7 +1587,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-blazer-lt-s0mulk",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "SD57FE9PHWU6U5BRG",
@@ -1527,10 +1607,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 16,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 22295,
       "sourceMsrp": 22295,
-      "price": 22975,
-      "markupRate": 0.03,
+      "price": 22295,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Wireless Charging",
@@ -1548,7 +1630,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-trax-1rs-6u5brg",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "SNAV17XLRK941FUM6",
@@ -1568,10 +1650,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 41600,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 18615,
       "sourceMsrp": null,
-      "price": 19175,
-      "markupRate": 0.03,
+      "price": 18615,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Remote Start",
@@ -1583,7 +1667,7 @@
       "sourceUrl": null,
       "slug": "2023-chevrolet-malibu-lt-41fum6",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "T6CNHD812H182FGU2",
@@ -1603,10 +1687,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 14800,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 14380,
       "sourceMsrp": null,
-      "price": 14800,
-      "markupRate": 0.03,
+      "price": 14380,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Apple CarPlay",
@@ -1621,7 +1707,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-malibu-lt-82fgu2",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "TBC6HGLHY83WB7032",
@@ -1641,10 +1727,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 2,
       "mileage": 10900,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 44920,
       "sourceMsrp": null,
-      "price": 46275,
-      "markupRate": 0.03,
+      "price": 44920,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Third-Row Seating",
@@ -1660,7 +1748,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-camaro-lt1-wb7032",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "TTKW0ZW4V3X48ZYCA",
@@ -1680,10 +1768,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 6,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 25220,
       "sourceMsrp": 25220,
-      "price": 25975,
-      "markupRate": 0.03,
+      "price": 25220,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Blind Spot Monitoring",
@@ -1697,7 +1787,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-trailblazer-lt-48zyca",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "WMPFNP41A6EYRRW4U",
@@ -1717,10 +1807,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 7,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 55145,
       "sourceMsrp": 55145,
-      "price": 56800,
-      "markupRate": 0.03,
+      "price": 55145,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Steering Wheel",
@@ -1736,7 +1828,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-traverse-high-country-yrrw4u",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "WY33HRV7P7A16A4XC",
@@ -1756,10 +1848,12 @@
       "interiorColor": "Medium Ash Gray",
       "doors": 4,
       "mileage": 0,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 22445,
       "sourceMsrp": 22445,
-      "price": 23125,
-      "markupRate": 0.03,
+      "price": 22445,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Blind Spot Monitoring",
@@ -1776,7 +1870,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-trax-activ-16a4xc",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "X619S8ZX93RCBRCXU",
@@ -1796,10 +1890,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 57700,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 22945,
       "sourceMsrp": null,
-      "price": 23625,
-      "markupRate": 0.03,
+      "price": 22945,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Leather Upholstery",
@@ -1813,7 +1909,7 @@
       "sourceUrl": null,
       "slug": "2022-nissan-altima-sr-cbrcxu",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "XG19ST42S3P1CTZG6",
@@ -1833,10 +1929,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 2,
       "mileage": 20,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 96055,
       "sourceMsrp": 96055,
-      "price": 98925,
-      "markupRate": 0.03,
+      "price": 96055,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Power Liftgate",
@@ -1852,7 +1950,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-corvette-stingray-2lt-1ctzg6",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "Z79S8NAD0B2GU3H02",
@@ -1872,10 +1970,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 4,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 37460,
       "sourceMsrp": 37460,
-      "price": 38575,
-      "markupRate": 0.03,
+      "price": 37460,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Power Liftgate",
@@ -1890,7 +1990,7 @@
       "sourceUrl": null,
       "slug": "2025-chevrolet-colorado-zr2-gu3h02",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "ZEHTN0KUHAGWUFMU9",
@@ -1910,10 +2010,12 @@
       "interiorColor": "Gideon / Very Dark Atmosphere",
       "doors": 4,
       "mileage": 57800,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 20820,
       "sourceMsrp": null,
-      "price": 21450,
-      "markupRate": 0.03,
+      "price": 20820,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Front Seats",
@@ -1927,7 +2029,7 @@
       "sourceUrl": null,
       "slug": "2022-chevrolet-malibu-ls-wufmu9",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "ZHW3GZRYFK6TVCH55",
@@ -1947,10 +2049,12 @@
       "interiorColor": "Jet Black",
       "doors": 4,
       "mileage": 23,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 77345,
       "sourceMsrp": 77345,
-      "price": 79675,
-      "markupRate": 0.03,
+      "price": 77345,
+      "markupRate": 0,
       "images": [],
       "features": [
         "360-Degree Camera",
@@ -1966,7 +2070,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-silverado-2500hd-lt-tvch55",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "ZS1RFBWRMY0JF4E9E",
@@ -1986,10 +2090,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 2,
       "mileage": 10,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 73970,
       "sourceMsrp": 73970,
-      "price": 76200,
-      "markupRate": 0.03,
+      "price": 73970,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Bose Premium Audio",
@@ -2002,7 +2108,7 @@
       "sourceUrl": null,
       "slug": "2026-chevrolet-corvette-stingray-1lt-jf4e9e",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     },
     {
       "id": "ZTH83P47X9AB8YWPB",
@@ -2022,10 +2128,12 @@
       "interiorColor": "Adrenaline Red",
       "doors": 4,
       "mileage": 30600,
+      "availability": null,
+      "dealer": null,
       "sourcePrice": 19395,
       "sourceMsrp": null,
-      "price": 19975,
-      "markupRate": 0.03,
+      "price": 19395,
+      "markupRate": 0,
       "images": [],
       "features": [
         "Heated Front Seats",
@@ -2038,7 +2146,7 @@
       "sourceUrl": null,
       "slug": "2023-honda-civic-lx-b8ywpb",
       "firstSeenAt": "2026-09-21T19:30:29.602Z",
-      "lastSeenAt": "2026-09-21T19:34:32.838Z"
+      "lastSeenAt": "2026-09-26T12:18:24.775Z"
     }
   ]
 }

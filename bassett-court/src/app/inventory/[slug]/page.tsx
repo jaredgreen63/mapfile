@@ -148,7 +148,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
 
             {vehicle.price != null ? <PaymentEstimator price={vehicle.price} /> : null}
 
-            <LocationNote />
+            <LocationNote vehicle={vehicle} />
 
             <div
               className="rounded-[var(--radius-card)] p-5"

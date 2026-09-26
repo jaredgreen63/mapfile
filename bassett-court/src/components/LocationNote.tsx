@@ -1,11 +1,22 @@
+import type { Vehicle } from '@/lib/types';
 import { siteConfig } from '~/site.config';
 
 /**
- * Where the vehicles physically are. Stated plainly wherever a buyer might
+ * Where a vehicle physically is. Stated plainly wherever a buyer might
  * otherwise assume the car is somewhere it is not.
+ *
+ * A multi-rooftop feed carries a different dealer and address per vehicle, so
+ * the record wins where it has one and the configured address is the fallback.
+ * Getting this wrong sends someone on a drive to the wrong town.
  */
-export function LocationNote({ variant = 'card' }: { variant?: 'card' | 'inline' | 'line' }) {
-  const { location } = siteConfig;
+export function LocationNote({
+  variant = 'card',
+  vehicle,
+}: {
+  variant?: 'card' | 'inline' | 'line';
+  vehicle?: Pick<Vehicle, 'dealer'> | null;
+}) {
+  const location = resolveLocation(vehicle);
 
   if (variant === 'line') {
     return (
@@ -42,8 +53,8 @@ export function LocationNote({ variant = 'card' }: { variant?: 'card' | 'inline'
       <p className="mt-3 text-[0.9375rem] font-semibold leading-snug">{location.dealer}</p>
       <address className="mt-1 text-[0.875rem] not-italic leading-relaxed text-secondary">
         {location.street}
-        <br />
-        {location.city}, {location.state} {location.zip}
+        {location.street && location.cityLine ? <br /> : null}
+        {location.cityLine}
       </address>
       <a
         href={location.mapsUrl}
@@ -57,6 +68,53 @@ export function LocationNote({ variant = 'card' }: { variant?: 'card' | 'inline'
       </a>
     </div>
   );
+}
+
+interface ResolvedLocation {
+  dealer: string;
+  street: string | null;
+  cityLine: string | null;
+  oneLine: string;
+  short: string;
+  mapsUrl: string;
+}
+
+function resolveLocation(vehicle?: Pick<Vehicle, 'dealer'> | null): ResolvedLocation {
+  const fallback = siteConfig.location;
+  const dealer = vehicle?.dealer;
+
+  if (!dealer?.address && !dealer?.name) {
+    return {
+      dealer: fallback.dealer,
+      street: fallback.street,
+      cityLine: `${fallback.city}, ${fallback.state} ${fallback.zip}`.trim(),
+      oneLine: fallback.oneLine,
+      short: fallback.short,
+      mapsUrl: fallback.mapsUrl,
+    };
+  }
+
+  const name = dealer.name ?? fallback.dealer;
+  const address = dealer.address ?? '';
+  // "5010 Old Easley Bridge Rd, Easley, SC 29642" -> street / rest
+  const [street, ...rest] = address.split(',').map((part) => part.trim()).filter(Boolean);
+  const cityLine = rest.join(', ') || null;
+  const oneLine = address || fallback.oneLine;
+
+  // The short form on a card should name the town, not the street.
+  const townMatch = cityLine?.match(/^([^,]+),?\s*([A-Z]{2})?/);
+  const short = townMatch
+    ? [townMatch[1], townMatch[2]].filter(Boolean).join(', ')
+    : fallback.short;
+
+  return {
+    dealer: name,
+    street: street ?? null,
+    cityLine,
+    oneLine,
+    short,
+    mapsUrl: `https://maps.google.com/?q=${encodeURIComponent(`${name}, ${oneLine}`)}`,
+  };
 }
 
 function PinIcon() {

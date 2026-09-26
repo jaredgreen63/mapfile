@@ -54,6 +54,70 @@ function normalizeCondition(raw: RawVehicle): Vehicle['condition'] {
   return 'new';
 }
 
+
+/**
+ * Facebook's vehicle catalogue reports distance as a value plus a unit. A feed
+ * in kilometres rendered as miles reads about 60% high, so the unit has to be
+ * honoured rather than assumed.
+ */
+function milesFrom(value: number | null, unit: string | null): number | null {
+  if (value == null) return null;
+  const normalized = (unit ?? '').toLowerCase().replace(/[^a-z]/g, '');
+  const isKm = normalized === 'km' || normalized.startsWith('kilom');
+  return isKm ? Math.round(value * 0.621371) : value;
+}
+
+/** available | pending | unavailable, from the spellings feeds actually use. */
+function normalizeAvailability(raw: unknown): Vehicle['availability'] {
+  const value = text(raw)?.toLowerCase().replace(/[^a-z]/g, '') ?? '';
+  if (!value) return null;
+  if (value === 'notavailable' || value === 'unavailable' || value === 'sold' || value === 'false') {
+    return 'unavailable';
+  }
+  if (value === 'pending' || value === 'pendingsale' || value === 'onhold') return 'pending';
+  if (value === 'available' || value === 'instock' || value === 'true' || value === 'active') {
+    return 'available';
+  }
+  return null;
+}
+
+/**
+ * Dealer addresses arrive either as plain text or as the JSON blob Facebook's
+ * catalogue spec uses ({addr1, city, region, postal_code}). Accept both.
+ */
+function readAddress(raw: unknown): string | null {
+  const value = text(raw);
+  if (!value) return null;
+  if (!value.startsWith('{')) return value;
+
+  try {
+    const parsed = JSON.parse(value) as Record<string, unknown>;
+    const parts = [
+      parsed.addr1 ?? parsed.address1 ?? parsed.street,
+      parsed.addr2 ?? parsed.address2,
+      parsed.city,
+      [parsed.region ?? parsed.state, parsed.postal_code ?? parsed.postalCode ?? parsed.zip]
+        .filter(Boolean)
+        .join(' '),
+    ]
+      .map((part) => text(part))
+      .filter((part): part is string => Boolean(part));
+    return parts.length ? parts.join(', ') : value;
+  } catch {
+    return value;
+  }
+}
+
+/** A feed's own "first on lot" date beats the date we happened to first see it. */
+function firstSeen(raw: RawVehicle, prior: Vehicle | undefined, now: string): string {
+  const declared = text(raw.dateFirstOnLot);
+  if (declared) {
+    const parsed = new Date(declared);
+    if (!Number.isNaN(parsed.getTime()) && parsed.getTime() > 0) return parsed.toISOString();
+  }
+  return prior?.firstSeenAt ?? now;
+}
+
 export function slugify(input: string): string {
   return input
     .toLowerCase()
@@ -150,7 +214,9 @@ export function normalizeVehicle(
     exteriorColor: titleCase(text(raw.exteriorColor)),
     interiorColor: titleCase(text(raw.interiorColor)),
     doors: num(raw.doors),
-    mileage: num(raw.mileage),
+    mileage: milesFrom(num(raw.mileage), text(raw.mileageUnit)),
+    availability: normalizeAvailability(raw.availability),
+    dealer: buildDealer(raw),
     sourcePrice: sourcePrice != null && sourcePrice > 0 ? Math.round(sourcePrice) : null,
     sourceMsrp: sourceMsrp != null && sourceMsrp > 0 ? Math.round(sourceMsrp) : null,
     price: applyMarkup(sourcePrice, markupRate, rounding),
@@ -160,9 +226,17 @@ export function normalizeVehicle(
     description: text(raw.description),
     sourceUrl: text(raw.sourceUrl),
     slug: `${slugify(slugBase)}-${slugSuffix.toLowerCase()}`,
-    firstSeenAt: prior?.firstSeenAt ?? now,
+    firstSeenAt: firstSeen(raw, prior, now),
     lastSeenAt: now,
   };
+}
+
+function buildDealer(raw: RawVehicle): Vehicle['dealer'] {
+  const name = text(raw.dealerName);
+  const address = readAddress(raw.dealerAddress);
+  const phone = text(raw.dealerPhone);
+  const id = text(raw.dealerId);
+  return name || address || phone || id ? { name, address, phone, id } : null;
 }
 
 /** Collapse duplicate records, preferring the entry with the most photos. */

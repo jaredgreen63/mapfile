@@ -14,13 +14,17 @@ import { fetchText } from './http';
 /** Maps our canonical field to the header spellings seen in the wild. */
 const FIELD_ALIASES: Record<keyof RawVehicle, string[]> = {
   vin: ['vin', 'vinnumber', 'vehicleidentificationnumber'],
-  stockNumber: ['stock', 'stocknumber', 'stockno', 'stock_num', 'dealerstocknumber'],
-  condition: ['condition', 'type', 'vehicletype', 'newused', 'new_used', 'inventorytype'],
+  stockNumber: ['stock', 'stocknumber', 'stockno', 'stocknum', 'dealerstocknumber'],
+  // "state_of_vehicle" is the Facebook vehicle-catalogue field carrying
+  // NEW / USED / CPO. Note that "vehicle_type" in that same spec means
+  // car_truck / motorcycle / boat — a body class, NOT a condition — so it must
+  // not be treated as one.
+  condition: ['condition', 'stateofvehicle', 'newused', 'inventorytype', 'newusedflag'],
   year: ['year', 'modelyear', 'vehicleyear'],
   make: ['make', 'manufacturer', 'brand'],
   model: ['model', 'modelname', 'carline'],
   trim: ['trim', 'trimlevel', 'style', 'series'],
-  bodyStyle: ['body', 'bodystyle', 'bodytype', 'vehiclebodystyle'],
+  bodyStyle: ['body', 'bodystyle', 'bodytype', 'vehiclebodystyle', 'vehicletype'],
   drivetrain: ['drivetrain', 'drive', 'drivetype', 'driveline', 'drivewheels'],
   transmission: ['transmission', 'trans', 'transmissiontype'],
   fuelType: ['fuel', 'fueltype', 'enginefueltype'],
@@ -28,13 +32,23 @@ const FIELD_ALIASES: Record<keyof RawVehicle, string[]> = {
   exteriorColor: ['exteriorcolor', 'extcolor', 'color', 'exterior'],
   interiorColor: ['interiorcolor', 'intcolor', 'interior'],
   doors: ['doors', 'doorcount', 'numberofdoors'],
-  mileage: ['mileage', 'odometer', 'miles', 'kilometres', 'odometerreading'],
-  price: ['price', 'sellingprice', 'internetprice', 'askingprice', 'saleprice', 'listprice'],
+  mileage: ['mileage', 'mileagevalue', 'odometer', 'odometervalue', 'miles', 'kilometres', 'odometerreading'],
+  mileageUnit: ['mileageunit', 'odometerunit', 'mileageunits', 'distanceunit'],
+  price: ['price', 'sellingprice', 'internetprice', 'askingprice', 'saleprice'],
   msrp: ['msrp', 'retailprice', 'listprice', 'suggestedretailprice'],
-  images: ['images', 'imageurls', 'photos', 'photourls', 'imagelist', 'pictures'],
+  images: ['images', 'imageurls', 'imageurl', 'photos', 'photourls', 'imagelist', 'pictures'],
   features: ['features', 'options', 'equipment', 'optionslist'],
-  description: ['description', 'comments', 'sellercomments', 'detail', 'notes'],
-  sourceUrl: ['url', 'vdpurl', 'detailurl', 'link', 'vehicleurl'],
+  description: ['description', 'hardcodeddescription', 'comments', 'sellercomments', 'detail', 'notes'],
+  sourceUrl: ['url', 'finalurl', 'vdpurl', 'detailurl', 'link', 'vehicleurl'],
+  // Facebook catalogue: available | not_available | pending. A sold vehicle
+  // may be flagged here rather than dropped from the export, so this decides
+  // whether a listing stays on the site.
+  availability: ['availability', 'availabilitystatus', 'status', 'instock'],
+  dealerId: ['dealerid', 'dealercode', 'rooftopid', 'storeid'],
+  dealerName: ['dealername', 'dealershipname', 'storename', 'rooftop'],
+  dealerPhone: ['dealerphone', 'phone', 'dealerphonenumber', 'storephone'],
+  dealerAddress: ['address', 'dealeraddress', 'location', 'storeaddress'],
+  dateFirstOnLot: ['datefirstonlot', 'dateinstock', 'inventorydate', 'datereceived'],
 };
 
 function normalizeKey(key: string): string {
@@ -101,12 +115,19 @@ export function mapRow(row: Record<string, unknown>): RawVehicle {
     interiorColor: str(pick('interiorColor')),
     doors: str(pick('doors')),
     mileage: str(pick('mileage')),
+    mileageUnit: str(pick('mileageUnit')),
     price: str(pick('price')),
     msrp: str(pick('msrp')),
     images: splitList(pick('images')),
     features: splitList(pick('features')),
     description: str(pick('description')),
     sourceUrl: str(pick('sourceUrl')),
+    availability: str(pick('availability')),
+    dealerId: str(pick('dealerId')),
+    dealerName: str(pick('dealerName')),
+    dealerPhone: str(pick('dealerPhone')),
+    dealerAddress: str(pick('dealerAddress')),
+    dateFirstOnLot: str(pick('dateFirstOnLot')),
   };
 }
 

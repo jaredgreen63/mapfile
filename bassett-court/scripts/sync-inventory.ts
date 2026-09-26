@@ -58,6 +58,13 @@ function parseArgs(argv: string[]): Args {
   return args;
 }
 
+/** Only vehicles a buyer could actually come and see are published. */
+function isPublishable(vehicle: Vehicle): boolean {
+  if (vehicle.availability === 'unavailable') return false;
+  if (vehicle.availability === 'pending' && !siteConfig.inventory.publishPending) return false;
+  return true;
+}
+
 function log(message: string): void {
   process.stdout.write(`${message}\n`);
 }
@@ -129,14 +136,25 @@ async function main(): Promise<void> {
     effectiveAdapter = 'demo (fallback)';
   }
 
-  const normalized = dedupe(
+  const mapped = dedupe(
     raw
       .map((entry) => normalizeVehicle(entry, now, previousById))
       .filter((vehicle): vehicle is Vehicle => vehicle !== null),
   );
 
+  // A feed that flags a sold vehicle rather than dropping it would otherwise
+  // keep it on the site forever. Withheld units never reach the snapshot, so
+  // they come off at the next sync exactly as a removed one would.
+  const withheld = mapped.filter((vehicle) => !isPublishable(vehicle));
+  const normalized = mapped.filter(isPublishable);
+
   log('');
   log(`  fetched   : ${raw.length}`);
+  if (withheld.length) {
+    const unavailable = withheld.filter((v) => v.availability === 'unavailable').length;
+    const pending = withheld.length - unavailable;
+    log(`  withheld  : ${withheld.length} (${unavailable} unavailable${pending ? `, ${pending} pending` : ''})`);
+  }
   log(`  publishable: ${normalized.length}`);
 
   // Shrink guard: a source that starts blocking us, or a markup change that
