@@ -23,6 +23,34 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { spawnSync } from 'node:child_process';
+import { loadEnvLocal } from '../src/lib/load-env';
+
+// Before any module that reads process.env at import time.
+const loadedEnvKeys = loadEnvLocal();
+
+/**
+ * Node's built-in fetch ignores HTTPS_PROXY unless NODE_USE_ENV_PROXY is set
+ * before the process starts — undici reads it once at initialisation, so
+ * setting it here in-process is too late. Behind a proxy the sync would
+ * otherwise fail with a bare 403 that looks like a rejected API key.
+ *
+ * Re-exec once with the flag set. No proxy configured means no re-exec, which
+ * is the normal case in CI.
+ */
+function reExecWithProxySupport(): void {
+  const proxy = process.env.HTTPS_PROXY ?? process.env.https_proxy;
+  if (!proxy || process.env.NODE_USE_ENV_PROXY) return;
+
+  const result = spawnSync(process.execPath, [...process.execArgv, ...process.argv.slice(1)], {
+    env: { ...process.env, NODE_USE_ENV_PROXY: '1' },
+    stdio: 'inherit',
+  });
+  process.exit(result.status ?? 1);
+}
+
+reExecWithProxySupport();
+
 import { siteConfig } from '../site.config';
 import { getAdapter } from '../src/lib/sources/index';
 import { dedupe, normalizeVehicle } from '../src/lib/normalize';
@@ -97,7 +125,12 @@ async function main(): Promise<void> {
   log(`Bassett Court Holdings — inventory sync`);
   log(`  adapter : ${adapterName}`);
   log(`  source  : ${siteConfig.inventory.sourceUrl}`);
-  log(`  markup  : +${(siteConfig.pricing.markupRate * 100).toFixed(2)}% (${siteConfig.pricing.rounding})`);
+  log(
+    siteConfig.pricing.markupRate === 0
+      ? '  pricing : source price published unchanged'
+      : `  markup  : +${(siteConfig.pricing.markupRate * 100).toFixed(2)}% (${siteConfig.pricing.rounding})`,
+  );
+  if (loadedEnvKeys.length) log(`  env     : loaded ${loadedEnvKeys.length} value(s) from .env.local`);
   log('');
 
   const previousSnapshot = await readSnapshot();

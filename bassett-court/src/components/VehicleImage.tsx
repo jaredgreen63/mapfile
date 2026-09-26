@@ -1,12 +1,19 @@
+'use client';
+
+import { useCallback, useState } from 'react';
 import type { Vehicle } from '@/lib/types';
 
 /**
  * Vehicle photography with a designed fallback.
  *
- * Source photos are hot-linked and occasionally 404 or arrive missing
- * altogether, so every listing needs to look deliberate without one. The
- * fallback draws a silhouette matched to the body style, tinted from the
- * vehicle's own exterior colour, which reads as intentional rather than broken.
+ * Source photos are hot-linked from the upstream CDN, so a listing has to look
+ * deliberate in two separate cases: no photo supplied at all, and a supplied
+ * photo that fails to load. The second is the one that bites — a 404 leaves
+ * the browser's broken-image icon and the alt text sitting in the card — so
+ * the fallback is wired to the image's error event, not just to a missing URL.
+ *
+ * The fallback draws a silhouette matched to the body style and tinted from
+ * the vehicle's own exterior colour, which reads as intentional.
  */
 
 const COLOR_MAP: [RegExp, string][] = [
@@ -119,7 +126,26 @@ export function VehicleImage({
   const src = vehicle.images?.[index];
   const alt = [vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(' ');
 
-  if (src) {
+  // Keyed by src so that moving through a gallery re-arms the fallback rather
+  // than carrying one bad photo's failure across to the next.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  /*
+   * These pages are statically generated, so an image can finish failing
+   * before React hydrates and attaches onError — the event is gone by the time
+   * anyone is listening, and the broken icon stays on screen. Checking the
+   * element's state when the ref attaches catches exactly that case.
+   */
+  const captureRef = useCallback(
+    (node: HTMLImageElement | null) => {
+      if (node?.complete && node.naturalWidth === 0 && node.currentSrc) {
+        setFailedSrc(node.getAttribute('src'));
+      }
+    },
+    [],
+  );
+
+  if (src && failedSrc !== src) {
     return (
       // Plain <img>: source hostnames are not known ahead of time, and the
       // upstream CDN already serves appropriately sized renditions.
@@ -130,6 +156,8 @@ export function VehicleImage({
         sizes={sizes}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
+        ref={captureRef}
+        onError={() => setFailedSrc(src)}
         className={`h-full w-full object-cover ${className}`}
       />
     );

@@ -108,6 +108,37 @@ function readAddress(raw: unknown): string | null {
   }
 }
 
+/**
+ * Derive fuel type from the engine description.
+ *
+ * The Shiftly export ships a fuel_type column that is empty on every row,
+ * which would leave the site's Fuel filter with nothing to filter on. The
+ * engine string is populated and unambiguous — "Duramax 6.6L V8 Turbodiesel",
+ * "EcoTec3 5.3L V8" — so it is read rather than left blank.
+ *
+ * Only used when the source supplies no fuel type of its own.
+ */
+function deriveFuelType(raw: RawVehicle): string | null {
+  const stated = text(raw.fuelType);
+  if (stated) return stated;
+
+  const haystack = `${text(raw.engine) ?? ''} ${text(raw.model) ?? ''} ${text(raw.trim) ?? ''}`.toLowerCase();
+  if (!haystack.trim()) return null;
+
+  if (/\bdiesel\b|duramax|cummins|power\s*stroke|turbodiesel/.test(haystack)) return 'Diesel';
+  if (/\bplug-?in\b|\bphev\b/.test(haystack)) return 'Plug-in Hybrid';
+  if (/\bhybrid\b/.test(haystack)) return 'Hybrid';
+  if (/\bev\b|\belectric\b|\bbev\b/.test(haystack)) return 'Electric';
+  if (/\bflex\s*fuel\b|\be85\b/.test(haystack)) return 'Flex Fuel';
+
+  // Anything with a described combustion engine and none of the markers above
+  // is petrol. Returning null here would empty the filter for 90% of the lot.
+  if (/\d\.\dl|\bv6\b|\bv8\b|\bi4\b|\bi6\b|\bi3\b|cylinder|dohc|ecotec|turbo/.test(haystack)) {
+    return 'Gasoline';
+  }
+  return null;
+}
+
 /** A feed's own "first on lot" date beats the date we happened to first see it. */
 function firstSeen(raw: RawVehicle, prior: Vehicle | undefined, now: string): string {
   const declared = text(raw.dateFirstOnLot);
@@ -209,7 +240,7 @@ export function normalizeVehicle(
     bodyStyle: titleCase(text(raw.bodyStyle)),
     drivetrain: text(raw.drivetrain)?.toUpperCase() ?? null,
     transmission: titleCase(text(raw.transmission)),
-    fuelType: titleCase(text(raw.fuelType)),
+    fuelType: titleCase(deriveFuelType(raw)),
     engine: text(raw.engine),
     exteriorColor: titleCase(text(raw.exteriorColor)),
     interiorColor: titleCase(text(raw.interiorColor)),

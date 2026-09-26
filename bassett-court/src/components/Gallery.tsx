@@ -56,7 +56,18 @@ export function Gallery({ vehicle }: { vehicle: Vehicle }) {
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                onError={(event) => {
+                  // Hide a thumbnail whose photo is gone rather than showing
+                  // the browser's broken-image icon in the filmstrip.
+                  event.currentTarget.closest('button')?.setAttribute('hidden', '');
+                }}
+                className="h-full w-full object-cover"
+              />
             </button>
           ))}
         </div>
